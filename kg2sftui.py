@@ -62,6 +62,7 @@ from kg2sft import (
     Graph,
     GraphMLLoader,
     KGToTrainingData,
+    AutoTuner,
     LLMConfig,
     GenerationConfig,
     ExtractionConfig,
@@ -134,6 +135,8 @@ if 'dataset' not in st.session_state:
     st.session_state.dataset = None                  # Generated training dataset
 if 'generation_complete' not in st.session_state:
     st.session_state.generation_complete = False     # Flag for generation status
+if 'auto_tuner' not in st.session_state:
+    st.session_state.auto_tuner = None               # AutoTuner instance (for report)
 
 # --- Azure OpenAI Configuration State ---
 # Credentials for Azure OpenAI API (empty by default for security)
@@ -162,6 +165,8 @@ if 'dedup_threshold' not in st.session_state:
     st.session_state.dedup_threshold = 0.95          # Path similarity threshold
 if 'sampling_strategy' not in st.session_state:
     st.session_state.sampling_strategy = "frequency_weighted"  # Sampling approach
+if 'auto_mode' not in st.session_state:
+    st.session_state.auto_mode = False                         # Auto-tuning mode toggle
 
 # --- File Upload Tracking ---
 # Prevents re-processing the same file on every Streamlit rerun
@@ -561,8 +566,30 @@ def main() -> None:
             max_value=1.0,
             value=st.session_state.temperature,
             step=0.1,
-            help="LLM sampling temperature (0=deterministic, 1=creative)"
+            help="LLM sampling temperature (0=deterministic, 1=creative)",
+            disabled=st.session_state.auto_mode  # Disabled in auto mode
         )
+        
+        st.divider()
+        
+        # ---------------------------------------------------------------------
+        # Auto Mode Toggle
+        # ---------------------------------------------------------------------
+        st.session_state.auto_mode = st.toggle(
+            "⚡ Auto-Tuning Mode",
+            value=st.session_state.auto_mode,
+            help="Automatically adjust parameters to reach the target count. "
+                 "May trade off quality for quantity. A quality impact report "
+                 "will be shown after generation."
+        )
+        
+        if st.session_state.auto_mode:
+            st.info(
+                "🤖 **Auto mode enabled.** Parameters (quality threshold, "
+                "dedup, temperature, sampling) will be automatically tuned "
+                "across up to 6 iterations to reach your target count. "
+                "Advanced settings below are ignored in this mode."
+            )
         
         st.divider()
         
@@ -570,7 +597,10 @@ def main() -> None:
         # Advanced Settings (Collapsible)
         # ---------------------------------------------------------------------
         # These settings are for power users who want fine-grained control
-        with st.expander("🔧 Advanced Settings"):
+        with st.expander("🔧 Advanced Settings", expanded=not st.session_state.auto_mode):
+            if st.session_state.auto_mode:
+                st.caption("⚠️ These settings are ignored in auto-tuning mode.")
+            
             # Quality threshold: Examples below this score are rejected
             st.session_state.quality_threshold = st.slider(
                 "Quality threshold",
@@ -578,7 +608,8 @@ def main() -> None:
                 max_value=1.0,
                 value=st.session_state.quality_threshold,
                 step=0.05,
-                help="Minimum quality score (0-1) to accept examples"
+                help="Minimum quality score (0-1) to accept examples",
+                disabled=st.session_state.auto_mode
             )
             
             # Max path depth: How far to traverse in the graph
@@ -597,7 +628,8 @@ def main() -> None:
                 max_value=1.0,
                 value=st.session_state.dedup_threshold,
                 step=0.05,
-                help="Paths more similar than this threshold are considered duplicates"
+                help="Paths more similar than this threshold are considered duplicates",
+                disabled=st.session_state.auto_mode
             )
             
             # Sampling strategy: How to select starting nodes for path extraction
@@ -606,7 +638,8 @@ def main() -> None:
                 "Sampling strategy",
                 options=sampling_options,
                 index=sampling_options.index(st.session_state.sampling_strategy),
-                help="frequency_weighted: Prefer highly-connected nodes; random: Equal probability"
+                help="frequency_weighted: Prefer highly-connected nodes; random: Equal probability",
+                disabled=st.session_state.auto_mode
             )
     
     # =========================================================================
@@ -759,7 +792,8 @@ def main() -> None:
                 }
                 domain_display = domain_descriptions.get(st.session_state.domain, st.session_state.domain)
                 # Show summary of generation settings
-                st.info(f"Ready to generate **{st.session_state.count}** training examples from **{st.session_state.graph_file_name}** using **{domain_display}** domain template.")
+                mode_label = "⚡ AUTO-TUNING" if st.session_state.auto_mode else "MANUAL"
+                st.info(f"Ready to generate **{st.session_state.count}** training examples from **{st.session_state.graph_file_name}** using **{domain_display}** domain template. Mode: **{mode_label}**")
             
             with gen_col2:
                 # Primary action button to start generation
@@ -785,53 +819,89 @@ def main() -> None:
                     progress_bar = st.progress(0)
                     status_text = st.empty()
                     
-                    status_text.text("🔧 Initializing pipeline...")
+                    if st.session_state.auto_mode:
+                        # =============================================================
+                        # AUTO-TUNING MODE
+                        # =============================================================
+                        status_text.text("⚡ Auto-tuning mode: analysing graph...")
+                        progress_bar.progress(5)
+                        
+                        # Override Azure OpenAI env vars so AutoTuner picks them up
+                        os.environ["AZURE_OPENAI_API_KEY"] = st.session_state.azure_api_key
+                        os.environ["AZURE_OPENAI_ENDPOINT"] = st.session_state.azure_endpoint
+                        os.environ["AZURE_OPENAI_DEPLOYMENT"] = st.session_state.azure_deployment
+                        os.environ["AZURE_OPENAI_MODEL"] = st.session_state.azure_deployment
+                        
+                        tuner = AutoTuner(
+                            graph_path=tmp_path,
+                            domain=st.session_state.domain,
+                            target_count=st.session_state.count,
+                            max_depth=st.session_state.max_depth,
+                        )
+                        
+                        status_text.text("🤖 Auto-tuning: generating training examples (this may take multiple iterations)...")
+                        progress_bar.progress(10)
+                        
+                        dataset = tuner.run()
+                        
+                        progress_bar.progress(100)
+                        status_text.text("✅ Auto-tuning generation complete!")
+                        
+                        # Store tuner for quality impact report
+                        st.session_state.dataset = dataset
+                        st.session_state.auto_tuner = tuner
+                        st.session_state.generation_complete = True
                     
-                    # Create LLM configuration from user-provided settings
-                    llm_config = LLMConfig(
-                        api_key=st.session_state.azure_api_key,
-                        api_endpoint=st.session_state.azure_endpoint,
-                        deployment_name=st.session_state.azure_deployment,
-                        api_version=st.session_state.azure_api_version,
-                        model_name=st.session_state.azure_deployment  # Use deployment name as model
-                    )
-                    
-                    # Initialize the main training data generator pipeline
-                    trainer = KGToTrainingData(
-                        graph_path=tmp_path,
-                        llm_config=llm_config,
-                        generation_config=GenerationConfig(
-                            count=st.session_state.count,
-                            temperature=st.session_state.temperature,
-                            max_tokens=500  # Max tokens per LLM response
-                        ),
-                        extraction_config=ExtractionConfig(
-                            max_hop_depth=st.session_state.max_depth,
-                            sampling_strategy=st.session_state.sampling_strategy,
-                            dedup_threshold=st.session_state.dedup_threshold
-                        ),
-                        validation_config=ValidationConfig(
-                            quality_threshold=st.session_state.quality_threshold,
-                            min_length=20,   # Min answer length in words
-                            max_length=500   # Max answer length in words
-                        ),
-                        domain=st.session_state.domain
-                    )
-                    
-                    status_text.text("📊 Extracting paths...")
-                    progress_bar.progress(10)
-                    
-                    # Execute the generation pipeline
-                    # This calls the LLM to generate QA pairs from graph paths
-                    status_text.text("🤖 Generating training examples...")
-                    dataset = trainer.generate(count=st.session_state.count)
-                    
-                    progress_bar.progress(100)
-                    status_text.text("✅ Generation complete!")
-                    
-                    # Store results in session state for display
-                    st.session_state.dataset = dataset
-                    st.session_state.generation_complete = True
+                    else:
+                        # =============================================================
+                        # MANUAL MODE (default)
+                        # =============================================================
+                        status_text.text("🔧 Initializing pipeline...")
+                        
+                        # Create LLM configuration from user-provided settings
+                        llm_config = LLMConfig(
+                            api_key=st.session_state.azure_api_key,
+                            api_endpoint=st.session_state.azure_endpoint,
+                            deployment_name=st.session_state.azure_deployment,
+                            api_version=st.session_state.azure_api_version,
+                            model_name=st.session_state.azure_deployment
+                        )
+                        
+                        # Initialize the main training data generator pipeline
+                        trainer = KGToTrainingData(
+                            graph_path=tmp_path,
+                            llm_config=llm_config,
+                            generation_config=GenerationConfig(
+                                count=st.session_state.count,
+                                temperature=st.session_state.temperature,
+                                max_tokens=500
+                            ),
+                            extraction_config=ExtractionConfig(
+                                max_hop_depth=st.session_state.max_depth,
+                                sampling_strategy=st.session_state.sampling_strategy,
+                                dedup_threshold=st.session_state.dedup_threshold
+                            ),
+                            validation_config=ValidationConfig(
+                                quality_threshold=st.session_state.quality_threshold,
+                                min_length=20,
+                                max_length=500
+                            ),
+                            domain=st.session_state.domain
+                        )
+                        
+                        status_text.text("📊 Extracting paths...")
+                        progress_bar.progress(10)
+                        
+                        status_text.text("🤖 Generating training examples...")
+                        dataset = trainer.generate(count=st.session_state.count)
+                        
+                        progress_bar.progress(100)
+                        status_text.text("✅ Generation complete!")
+                        
+                        # Store results in session state for display
+                        st.session_state.dataset = dataset
+                        st.session_state.auto_tuner = None
+                        st.session_state.generation_complete = True
                     
                 except Exception as e:
                     st.error(f"❌ Generation error: {e}")
@@ -889,6 +959,90 @@ def main() -> None:
                 "Total Cost",
                 f"${cost_info.get('total_cost', 0):.4f}"
             )
+        
+        # -----------------------------------------------------------------
+        # Auto-Tuning Quality Impact Assessment (only in auto mode)
+        # -----------------------------------------------------------------
+        auto_tuner = getattr(st.session_state, 'auto_tuner', None)
+        if auto_tuner is not None and hasattr(auto_tuner, 'tier_results') and auto_tuner.tier_results:
+            gen_cfg_mode = metadata.get("generation_config", {}).get("mode", "")
+            if gen_cfg_mode == "auto":
+                with st.expander("⚠️ Quality Impact Assessment (Auto-Tuning)", expanded=True):
+                    # Determine quality level
+                    max_tier_used = -1
+                    for r in auto_tuner.tier_results:
+                        if r.generated_count > 0:
+                            max_tier_used = max(max_tier_used, r.iteration)
+                    
+                    if max_tier_used <= 0:
+                        st.success(
+                            "✅ **Quality Level: HIGH** — All examples generated with "
+                            "default parameters. No trade-offs were needed."
+                        )
+                    elif max_tier_used <= 2:
+                        st.warning(
+                            f"🟡 **Quality Level: MODERATE** — Some parameters were relaxed. "
+                            f"Highest tuning tier used: {max_tier_used} "
+                            f"({auto_tuner.TUNING_TIERS[max_tier_used]['description']})"
+                        )
+                    else:
+                        st.error(
+                            f"🔴 **Quality Level: REDUCED** — Aggressive parameters were used "
+                            f"to meet the target count. "
+                            f"Highest tuning tier used: {max_tier_used} "
+                            f"({auto_tuner.TUNING_TIERS[max_tier_used]['description']})"
+                        )
+                    
+                    # Iteration breakdown table
+                    st.markdown("**Iteration Breakdown:**")
+                    iter_data = []
+                    for r in auto_tuner.tier_results:
+                        tier_desc = auto_tuner.TUNING_TIERS[r.iteration]["description"]
+                        iter_data.append({
+                            "Iter": r.iteration,
+                            "Description": tier_desc,
+                            "Generated": r.generated_count,
+                            "Rejected": r.rejected_count,
+                            "Avg Quality": f"{r.avg_quality:.3f}",
+                            "Quality Threshold": r.quality_threshold,
+                            "Dedup Threshold": r.dedup_threshold,
+                            "Temperature": r.temperature,
+                            "Sampling": r.sampling_strategy,
+                        })
+                    st.dataframe(iter_data, use_container_width=True, hide_index=True)
+                    
+                    # Collect unique warnings
+                    all_warnings = []
+                    seen_warnings = set()
+                    for r in auto_tuner.tier_results:
+                        for w in r.quality_warnings:
+                            if w not in seen_warnings:
+                                seen_warnings.add(w)
+                                all_warnings.append(w)
+                    
+                    if all_warnings:
+                        st.markdown("**Trade-offs applied:**")
+                        for w in all_warnings:
+                            st.markdown(f"- {w}")
+                    
+                    # Recommendations
+                    st.markdown("**Recommendations:**")
+                    if max_tier_used <= 0:
+                        st.markdown("- Data is high quality and ready for fine-tuning.")
+                    else:
+                        st.markdown("- Review generated examples for accuracy before fine-tuning.")
+                        if max_tier_used >= 3:
+                            st.markdown("- Consider manually filtering low-quality examples.")
+                            st.markdown(
+                                "- Consider enriching your knowledge graph with more "
+                                "nodes/edges for better results."
+                            )
+                        avg_q = quality_info.get('avg_quality', 1.0)
+                        if avg_q < 0.6:
+                            st.markdown(
+                                f"- Average quality ({avg_q:.3f}) is below 0.6 — "
+                                f"manual review is strongly recommended."
+                            )
         
         # -----------------------------------------------------------------
         # Detailed Cost Breakdown (Collapsible)

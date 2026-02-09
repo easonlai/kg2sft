@@ -30,6 +30,9 @@ Usage:
     python kg2sft.py --graph beauty_products.graphml --count 50 --domain beauty_product
     python kg2sft.py --graph makeup_knowledge_graph.graphml --count 50 --domain beauty_makeup
     
+    # Auto-tuning mode (adjust params automatically to reach target count)
+    python kg2sft.py --graph makeup_knowledge_graph.graphml --count 500 --domain beauty_makeup --auto
+    
     # Or with your own graph
     python kg2sft.py --graph my_graph.graphml --count 100
 
@@ -1099,7 +1102,400 @@ class KGToTrainingData:
 
 
 # ============================================================================
-# SECTION 9: MAIN EXECUTION
+# SECTION 9: AUTO-TUNING MODE
+# ============================================================================
+
+@dataclass
+class AutoTuneResult:
+    """Result of an auto-tuning run, tracking parameters and quality impact."""
+    iteration: int = 0
+    quality_threshold: float = 0.7
+    dedup_threshold: float = 0.95
+    temperature: float = 0.7
+    sampling_strategy: str = "frequency_weighted"
+    generated_count: int = 0
+    rejected_count: int = 0
+    avg_quality: float = 0.0
+    quality_warnings: List[str] = field(default_factory=list)
+
+
+class AutoTuner:
+    """Automatic parameter tuner that adjusts generation settings to hit a
+    target sample count, progressively relaxing quality constraints.
+
+    Strategy (each iteration relaxes further):
+        Iter 0 – Default parameters (best quality)
+        Iter 1 – Lower dedup threshold (0.95 → 0.70), allow more similar paths
+        Iter 2 – Lower quality threshold (0.7 → 0.5), accept more borderline examples
+        Iter 3 – Raise temperature (0.7 → 0.9), increase generation diversity
+        Iter 4 – Switch to random sampling, lower dedup further (0.50)
+        Iter 5 – Aggressive: quality 0.3, dedup 0.30, temperature 1.0
+
+    The tuner stops as soon as the target count is reached.
+    """
+
+    # Each tier defines the parameter overrides for that relaxation level
+    TUNING_TIERS = [
+        {   # Tier 0: defaults (highest quality)
+            "quality_threshold": 0.7,
+            "dedup_threshold": 0.95,
+            "temperature": 0.7,
+            "sampling_strategy": "frequency_weighted",
+            "description": "Default parameters (best quality)",
+        },
+        {   # Tier 1: relax dedup
+            "quality_threshold": 0.7,
+            "dedup_threshold": 0.70,
+            "temperature": 0.7,
+            "sampling_strategy": "frequency_weighted",
+            "description": "Relaxed dedup threshold",
+        },
+        {   # Tier 2: relax quality
+            "quality_threshold": 0.5,
+            "dedup_threshold": 0.70,
+            "temperature": 0.7,
+            "sampling_strategy": "frequency_weighted",
+            "description": "Lower quality threshold",
+        },
+        {   # Tier 3: raise temperature
+            "quality_threshold": 0.5,
+            "dedup_threshold": 0.60,
+            "temperature": 0.9,
+            "sampling_strategy": "frequency_weighted",
+            "description": "Higher temperature for diversity",
+        },
+        {   # Tier 4: random sampling
+            "quality_threshold": 0.5,
+            "dedup_threshold": 0.50,
+            "temperature": 0.9,
+            "sampling_strategy": "random",
+            "description": "Random sampling with relaxed dedup",
+        },
+        {   # Tier 5: aggressive
+            "quality_threshold": 0.3,
+            "dedup_threshold": 0.30,
+            "temperature": 1.0,
+            "sampling_strategy": "random",
+            "description": "Aggressive (minimum quality, maximum yield)",
+        },
+    ]
+
+    def __init__(self, graph_path: str, domain: str, target_count: int,
+                 output_prefix: str = "output_training",
+                 max_depth: int = 999):
+        self.graph_path = graph_path
+        self.domain = domain
+        self.target_count = target_count
+        self.output_prefix = output_prefix
+        self.max_depth = max_depth
+        self.tier_results: List[AutoTuneResult] = []
+
+    # ------------------------------------------------------------------
+    def _analyse_graph(self) -> Dict:
+        """Quick analysis of the graph to estimate generation capacity."""
+        loader = GraphMLLoader()
+        graph = loader.load(self.graph_path)
+        nodes = len(graph.get_nodes())
+        edges = len(graph.get_edges())
+        # Rough heuristic: each edge can produce ~1-2 unique paths
+        estimated_capacity = max(edges, nodes) * 2
+        return {
+            "nodes": nodes,
+            "edges": edges,
+            "estimated_capacity": estimated_capacity,
+        }
+
+    # ------------------------------------------------------------------
+    def _run_iteration(self, tier_index: int,
+                       remaining: int,
+                       existing_dataset: Optional[TrainingDataset] = None
+                       ) -> Tuple[TrainingDataset, AutoTuneResult]:
+        """Run one generation iteration with the given tier parameters."""
+        tier = self.TUNING_TIERS[tier_index]
+
+        # Over-request paths to compensate for rejections
+        overshoot = int(remaining * 1.5) + 10
+
+        trainer = KGToTrainingData(
+            graph_path=self.graph_path,
+            generation_config=GenerationConfig(
+                count=overshoot,
+                temperature=tier["temperature"],
+                max_tokens=500,
+            ),
+            extraction_config=ExtractionConfig(
+                max_hop_depth=self.max_depth,
+                sampling_strategy=tier["sampling_strategy"],
+                dedup_threshold=tier["dedup_threshold"],
+            ),
+            validation_config=ValidationConfig(
+                quality_threshold=tier["quality_threshold"],
+                min_length=20 if tier["quality_threshold"] >= 0.5 else 10,
+                max_length=500,
+            ),
+            domain=self.domain,
+        )
+
+        dataset = trainer.generate(count=remaining)
+
+        # Build result
+        quality_report = dataset.get_quality_report()
+        gen_cfg = dataset.metadata.get("generation_config", {})
+
+        result = AutoTuneResult(
+            iteration=tier_index,
+            quality_threshold=tier["quality_threshold"],
+            dedup_threshold=tier["dedup_threshold"],
+            temperature=tier["temperature"],
+            sampling_strategy=tier["sampling_strategy"],
+            generated_count=gen_cfg.get("count_generated", 0),
+            rejected_count=gen_cfg.get("count_rejected", 0),
+            avg_quality=quality_report.get("avg_quality", 0.0),
+        )
+
+        # Record quality warnings
+        warnings = []
+        if tier["quality_threshold"] < 0.7:
+            warnings.append(
+                f"Quality threshold lowered to {tier['quality_threshold']:.1f} "
+                f"(default: 0.7)"
+            )
+        if tier["dedup_threshold"] < 0.95:
+            warnings.append(
+                f"Dedup threshold lowered to {tier['dedup_threshold']:.2f} "
+                f"(default: 0.95) — some examples may be more similar"
+            )
+        if tier["temperature"] > 0.7:
+            warnings.append(
+                f"Temperature raised to {tier['temperature']:.1f} "
+                f"(default: 0.7) — outputs may be less deterministic"
+            )
+        if tier["sampling_strategy"] == "random":
+            warnings.append(
+                "Switched to random sampling — path selection less optimised"
+            )
+        result.quality_warnings = warnings
+
+        return dataset, result
+
+    # ------------------------------------------------------------------
+    def run(self) -> TrainingDataset:
+        """Execute the auto-tuning loop.
+
+        Returns the merged TrainingDataset once target count is reached
+        or all tiers are exhausted.
+        """
+        print("\n" + "=" * 60)
+        print("🤖 AUTO-TUNING MODE")
+        print("=" * 60)
+
+        # Analyse graph
+        graph_info = self._analyse_graph()
+        print(f"\n📊 Graph Analysis:")
+        print(f"   Nodes: {graph_info['nodes']}")
+        print(f"   Edges: {graph_info['edges']}")
+        print(f"   Estimated capacity: ~{graph_info['estimated_capacity']} examples")
+        print(f"   Target count: {self.target_count} examples")
+
+        if self.target_count > graph_info["estimated_capacity"]:
+            print(f"\n⚠️  Target ({self.target_count}) exceeds estimated graph "
+                  f"capacity (~{graph_info['estimated_capacity']}). "
+                  f"Quality trade-offs will be applied.")
+
+        merged_dataset = TrainingDataset()
+        total_api_calls = 0
+        total_input_tokens = 0
+        total_output_tokens = 0
+        total_rejected = 0
+
+        for tier_idx, tier in enumerate(self.TUNING_TIERS):
+            remaining = self.target_count - len(merged_dataset)
+            if remaining <= 0:
+                break
+
+            print(f"\n{'─'*50}")
+            print(f"🔄 Iteration {tier_idx}: {tier['description']}")
+            print(f"   Remaining: {remaining} examples needed")
+            print(f"   Params: quality≥{tier['quality_threshold']}, "
+                  f"dedup={tier['dedup_threshold']}, "
+                  f"temp={tier['temperature']}, "
+                  f"sampling={tier['sampling_strategy']}")
+
+            dataset, result = self._run_iteration(tier_idx, remaining)
+            self.tier_results.append(result)
+
+            # Merge new examples into combined dataset
+            for ex in dataset.examples:
+                if len(merged_dataset) >= self.target_count:
+                    break
+                merged_dataset.examples.append(ex)
+
+            # Accumulate cost tracking from metadata
+            cost = dataset.metadata.get("cost", {})
+            total_api_calls += cost.get("api_calls", 0)
+            total_input_tokens += cost.get("input_tokens", 0)
+            total_output_tokens += cost.get("output_tokens", 0)
+            total_rejected += result.rejected_count
+
+            print(f"   ✅ Got {result.generated_count} examples "
+                  f"(total: {len(merged_dataset)}/{self.target_count})")
+
+            if len(merged_dataset) >= self.target_count:
+                print(f"\n🎯 Target reached at iteration {tier_idx}!")
+                break
+        else:
+            print(f"\n⚠️  Exhausted all tuning tiers. "
+                  f"Generated {len(merged_dataset)}/{self.target_count} examples.")
+
+        # Build merged metadata
+        llm_cfg = LLMConfig.from_env()
+        input_cost = (total_input_tokens / 1000) * llm_cfg.input_price_per_1k
+        output_cost = (total_output_tokens / 1000) * llm_cfg.output_price_per_1k
+        total_cost = input_cost + output_cost
+
+        merged_dataset.metadata = {
+            "generation_config": {
+                "mode": "auto",
+                "count_requested": self.target_count,
+                "count_generated": len(merged_dataset),
+                "count_rejected": total_rejected,
+                "acceptance_rate": round(
+                    len(merged_dataset) / (len(merged_dataset) + total_rejected), 3
+                ) if (len(merged_dataset) + total_rejected) > 0 else 0,
+                "tuning_iterations": len(self.tier_results),
+            },
+            "cost": {
+                "input_tokens": total_input_tokens,
+                "output_tokens": total_output_tokens,
+                "total_tokens": total_input_tokens + total_output_tokens,
+                "input_cost": round(input_cost, 4),
+                "output_cost": round(output_cost, 4),
+                "total_cost": round(total_cost, 4),
+                "api_calls": total_api_calls,
+                "avg_cost_per_example": round(
+                    total_cost / len(merged_dataset), 6
+                ) if len(merged_dataset) > 0 else 0,
+            },
+            "quality": merged_dataset.get_quality_report(),
+            "graph": graph_info,
+        }
+
+        return merged_dataset
+
+    # ------------------------------------------------------------------
+    def print_auto_report(self, dataset: TrainingDataset):
+        """Print comprehensive auto-tuning report with quality warnings."""
+        if not dataset.metadata:
+            print("⚠️  No generation report available")
+            return
+
+        print("\n" + "=" * 60)
+        print("📊 AUTO-TUNING GENERATION REPORT")
+        print("=" * 60)
+
+        gen_cfg = dataset.metadata.get("generation_config", {})
+        print(f"\n📈 Generation Statistics:")
+        print(f"   Mode: AUTO-TUNING")
+        print(f"   Requested: {gen_cfg.get('count_requested', 0)} examples")
+        print(f"   Generated: {gen_cfg.get('count_generated', 0)} examples")
+        print(f"   Rejected: {gen_cfg.get('count_rejected', 0)} examples")
+        print(f"   Acceptance Rate: {gen_cfg.get('acceptance_rate', 0)*100:.1f}%")
+        print(f"   Tuning Iterations: {gen_cfg.get('tuning_iterations', 0)}")
+
+        # Per-iteration breakdown
+        if self.tier_results:
+            print(f"\n🔧 Iteration Breakdown:")
+            for r in self.tier_results:
+                tier_desc = self.TUNING_TIERS[r.iteration]["description"]
+                print(f"   Iter {r.iteration} ({tier_desc}):")
+                print(f"      Generated: {r.generated_count}, "
+                      f"Rejected: {r.rejected_count}, "
+                      f"Avg Quality: {r.avg_quality:.3f}")
+
+        cost = dataset.metadata.get("cost", {})
+        print(f"\n💰 Cost Report:")
+        print(f"   Input Tokens: {cost.get('input_tokens', 0):,}")
+        print(f"   Output Tokens: {cost.get('output_tokens', 0):,}")
+        print(f"   Input Cost: ${cost.get('input_cost', 0):.4f}")
+        print(f"   Output Cost: ${cost.get('output_cost', 0):.4f}")
+        print(f"   Total Cost: ${cost.get('total_cost', 0):.4f}")
+        print(f"   Cost per Example: ${cost.get('avg_cost_per_example', 0):.6f}")
+        print(f"   API Calls: {cost.get('api_calls', 0)}")
+
+        quality = dataset.metadata.get("quality", {})
+        print(f"\n⭐ Quality Report:")
+        print(f"   Total Examples: {quality.get('total_examples', 0)}")
+        print(f"   Average Quality: {quality.get('avg_quality', 0):.3f}/1.0")
+        print(f"   Min Quality: {quality.get('min_quality', 0):.3f}")
+        print(f"   Max Quality: {quality.get('max_quality', 0):.3f}")
+
+        graph_info = dataset.metadata.get("graph", {})
+        print(f"\n📊 Graph Statistics:")
+        print(f"   Nodes: {graph_info.get('nodes', 0)}")
+        print(f"   Edges: {graph_info.get('edges', 0)}")
+        est = graph_info.get('estimated_capacity', 'N/A')
+        print(f"   Estimated Capacity: ~{est}")
+
+        # === QUALITY IMPACT WARNING SECTION ===
+        all_warnings = []
+        max_tier_used = -1
+        for r in self.tier_results:
+            if r.generated_count > 0:
+                max_tier_used = max(max_tier_used, r.iteration)
+                all_warnings.extend(r.quality_warnings)
+
+        # Deduplicate warnings
+        seen = set()
+        unique_warnings = []
+        for w in all_warnings:
+            if w not in seen:
+                seen.add(w)
+                unique_warnings.append(w)
+
+        print(f"\n{'='*60}")
+        print(f"⚠️  QUALITY IMPACT ASSESSMENT (Auto-Tuning Mode)")
+        print(f"{'='*60}")
+
+        if max_tier_used <= 0:
+            print(f"   ✅ All examples generated with DEFAULT parameters.")
+            print(f"   Quality level: HIGH — no trade-offs were needed.")
+        elif max_tier_used <= 2:
+            print(f"   🟡 Moderate quality trade-offs were applied.")
+            print(f"   Quality level: MODERATE — some parameters were relaxed.")
+            print(f"   Highest tuning tier used: {max_tier_used} "
+                  f"({self.TUNING_TIERS[max_tier_used]['description']})")
+        else:
+            print(f"   🔴 Significant quality trade-offs were applied.")
+            print(f"   Quality level: REDUCED — aggressive parameters were used")
+            print(f"   to meet the target count.")
+            print(f"   Highest tuning tier used: {max_tier_used} "
+                  f"({self.TUNING_TIERS[max_tier_used]['description']})")
+
+        if unique_warnings:
+            print(f"\n   Trade-offs applied:")
+            for w in unique_warnings:
+                print(f"   • {w}")
+
+        print(f"\n   💡 Recommendations:")
+        if max_tier_used <= 0:
+            print(f"   • Data is high quality and ready for fine-tuning.")
+        else:
+            print(f"   • Review generated examples for accuracy before fine-tuning.")
+            if max_tier_used >= 3:
+                print(f"   • Consider manually filtering low-quality examples.")
+                print(f"   • A smaller graph may not support {gen_cfg.get('count_requested', 0)} "
+                      f"high-quality examples.")
+                print(f"   • Consider enriching your knowledge graph with more "
+                      f"nodes/edges for better results.")
+            if quality.get('avg_quality', 1.0) < 0.6:
+                print(f"   • Average quality ({quality.get('avg_quality', 0):.3f}) is below 0.6 —"
+                      f" manual review strongly recommended.")
+
+        print(f"\n{'='*60}")
+
+
+# ============================================================================
+# SECTION 10: MAIN EXECUTION
 # ============================================================================
 
 def main():
@@ -1115,6 +1511,9 @@ def main():
         --max-depth: Maximum path depth (default: 999, paths explore naturally)
         --dedup-threshold: Path similarity threshold 0-1 (default: 0.95)
         --sampling: Sampling strategy ('frequency_weighted' or 'random')
+        --auto: Enable auto-tuning mode — automatically adjusts parameters to hit
+                the target --count. May trade off quality for quantity. A quality
+                impact report is printed after generation.
     
     Examples:
         # Generic domain (technology knowledge graph)
@@ -1125,6 +1524,9 @@ def main():
         
         # Beauty Makeup domain (makeup consultation knowledge graph)
         python kg2sft.py --graph makeup_knowledge_graph.graphml --count 50 --domain beauty_makeup
+        
+        # Auto-tuning mode (automatically tune params to reach target count)
+        python kg2sft.py --graph makeup_knowledge_graph.graphml --count 500 --domain beauty_makeup --auto
     """
     import argparse
     import sys
@@ -1195,6 +1597,15 @@ def main():
         choices=["frequency_weighted", "random"],
         help="Sampling strategy (default: frequency_weighted)"
     )
+    parser.add_argument(
+        "--auto",
+        action="store_true",
+        default=False,
+        help="Enable auto-tuning mode: automatically adjusts quality threshold, "
+             "dedup threshold, temperature, and sampling strategy to reach the "
+             "target --count. May sacrifice quality for quantity. A quality "
+             "impact report is shown after generation."
+    )
     
     args = parser.parse_args()
     
@@ -1231,7 +1642,40 @@ def main():
     print(f"   Output: {args.output}")
     print(f"   Count: {args.count}")
     print(f"   Domain: {domain_descriptions.get(args.domain, args.domain)}")
+    print(f"   Mode: {'AUTO-TUNING' if args.auto else 'MANUAL'}")
     
+    # === AUTO-TUNING MODE ===
+    if args.auto:
+        print("\n⚡ Auto-tuning mode enabled.")
+        print("   Parameters will be automatically adjusted to reach the target count.")
+        print("   Quality may be traded off — see the report after generation.")
+        
+        tuner = AutoTuner(
+            graph_path=graph_path,
+            domain=args.domain,
+            target_count=args.count,
+            output_prefix=args.output,
+            max_depth=args.max_depth,
+        )
+        
+        dataset = tuner.run()
+        tuner.print_auto_report(dataset)
+        
+        print("\n💾 Saving results...")
+        dataset.save_jsonl(output_jsonl)
+        dataset.save_json(output_json)
+        
+        print("\n✨ Done! Check output files:")
+        print(f"   - {output_jsonl} (SFT format - ready for fine-tuning)")
+        print(f"   - {output_json} (Human-readable format)")
+        
+        print("\n📖 Next steps:")
+        print("   1. Review the QUALITY IMPACT ASSESSMENT above")
+        print("   2. Review output_training.jsonl for accuracy")
+        print("   3. Use for SLM fine-tuning (Hugging Face, LiteLLM, etc.)")
+        return
+    
+    # === MANUAL MODE (default) ===
     trainer = KGToTrainingData(
         graph_path=graph_path,
         

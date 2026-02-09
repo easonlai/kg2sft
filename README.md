@@ -18,6 +18,7 @@ kg2sft automatically converts Knowledge Graphs (GraphML format) into supervised 
 - [Quick Start](#-quick-start)
 - [Web UI (Streamlit)](#-web-ui-streamlit)
 - [Detailed Usage](#-detailed-usage)
+- [Auto-Tuning Mode](#-auto-tuning-mode)
 - [Understanding Output: Why Fewer Examples](#%EF%B8%8F-understanding-output-why-you-may-get-fewer-examples-than-requested)
 - [Sample Knowledge Graphs](#-sample-knowledge-graphs)
 - [Input Format](#-input-format-graphml)
@@ -41,6 +42,7 @@ kg2sft automatically converts Knowledge Graphs (GraphML format) into supervised 
 - 🎯 **Domain-Specific**: Built-in templates for beauty products, makeup consultation, and generic domains
 - 🔍 **Path Deduplication**: Jaccard similarity-based filtering for diverse training data
 - 📈 **Comprehensive Reporting**: Detailed cost, quality, and graph statistics
+- ⚡ **Auto-Tuning Mode**: Automatically adjusts parameters across up to 6 tiers to reach target count, with quality impact reporting
 - 🖥️ **Web UI (Optional)**: Streamlit-based UI with interactive graph visualization
 - 🌐 **Cloud Hosted**: Try it instantly at [kg2sft.streamlit.app](https://kg2sft.streamlit.app/) - no installation required
 
@@ -101,6 +103,9 @@ python kg2sft.py --graph beauty_products.graphml --count 50 --domain beauty_prod
 # Run with makeup consultation graph sample (beauty_makeup domain - skin types, finishes, techniques)
 python kg2sft.py --graph makeup_knowledge_graph.graphml --count 50 --domain beauty_makeup
 
+# Auto-tuning mode (automatically tune params to reach target count)
+python kg2sft.py --graph makeup_knowledge_graph.graphml --count 500 --domain beauty_makeup --auto
+
 # Generate 100 examples from your own graph
 python kg2sft.py --graph my_graph.graphml --count 100
 ```
@@ -142,6 +147,9 @@ You can use kg2sft directly in your browser without any local installation. Simp
   - Azure OpenAI credentials (API key, endpoint, deployment)
   - Generation parameters (count, domain, temperature)
   - Advanced settings (quality threshold, dedup threshold, sampling strategy)
+- ⚡ **Auto-Tuning Mode**: Toggle in sidebar to auto-adjust parameters and reach target count
+  - Quality impact assessment displayed after generation
+  - Iteration breakdown table with per-tier metrics
 - 📊 **Real-time results display**
   - Generation metrics and quality scores
   - Cost breakdown
@@ -202,6 +210,7 @@ python kg2sft.py [OPTIONS]
 | `--max-depth` | int | `999` | ❌ | Maximum path length (999 = explore naturally until no unvisited neighbors) |
 | `--dedup-threshold` | float | `0.95` | ❌ | Path similarity threshold for deduplication |
 | `--sampling` | str | `frequency_weighted` | ❌ | Sampling strategy (`frequency_weighted`, `random`) |
+| `--auto` | flag | `false` | ❌ | Enable auto-tuning mode: automatically adjusts parameters to reach target `--count` (see [Auto-Tuning Mode](#-auto-tuning-mode)) |
 
 ### Examples
 
@@ -235,6 +244,135 @@ python kg2sft.py \
 **Quick test with 5 examples:**
 ```bash
 python kg2sft.py --graph technology_knowledge.graphml --count 5
+```
+
+**Auto-tuning mode (reach target count automatically):**
+```bash
+python kg2sft.py --graph makeup_knowledge_graph.graphml --count 500 --domain beauty_makeup --auto
+```
+
+---
+
+## ⚡ Auto-Tuning Mode
+
+The `--auto` flag enables **automatic parameter tuning** that progressively relaxes quality constraints to reach your desired target count. This is useful when you need a specific number of training examples and are willing to accept some quality trade-offs.
+
+### When to Use Auto Mode
+
+| Scenario | Recommended Mode |
+|----------|------------------|
+| Need exact count of examples for fine-tuning | ⚡ **Auto** |
+| Graph is small but target count is large | ⚡ **Auto** |
+| Maximum quality, count doesn't matter | ⌨️ **Manual** |
+| Fine-grained control over parameters | ⌨️ **Manual** |
+| First exploration of a new graph | ⌨️ **Manual** |
+
+### How It Works
+
+The auto-tuner runs up to **6 iterations (tiers)**, each progressively relaxing parameters. It stops as soon as the target count is reached:
+
+```
+Target count: 500
+    │
+    ▼
+Tier 0: Default params (best quality)
+    │  quality≥0.7, dedup=0.95, temp=0.7, freq_weighted
+    │  → Got 180 examples
+    ▼
+Tier 1: Relax dedup (allow more similar paths)
+    │  quality≥0.7, dedup=0.70, temp=0.7, freq_weighted
+    │  → Got 120 more (total: 300)
+    ▼
+Tier 2: Lower quality threshold
+    │  quality≥0.5, dedup=0.70, temp=0.7, freq_weighted
+    │  → Got 100 more (total: 400)
+    ▼
+Tier 3: Raise temperature
+    │  quality≥0.5, dedup=0.60, temp=0.9, freq_weighted
+    │  → Got 100 more (total: 500)
+    ▼
+🎯 Target reached at Tier 3!
+```
+
+### Tuning Tiers Reference
+
+| Tier | Description | Quality Threshold | Dedup | Temperature | Sampling |
+|------|-------------|:-:|:-:|:-:|:-:|
+| 0 | Default (best quality) | 0.7 | 0.95 | 0.7 | frequency_weighted |
+| 1 | Relaxed dedup | 0.7 | 0.70 | 0.7 | frequency_weighted |
+| 2 | Lower quality threshold | 0.5 | 0.70 | 0.7 | frequency_weighted |
+| 3 | Higher temperature | 0.5 | 0.60 | 0.9 | frequency_weighted |
+| 4 | Random sampling | 0.5 | 0.50 | 0.9 | random |
+| 5 | Aggressive (max yield) | 0.3 | 0.30 | 1.0 | random |
+
+### What Gets Relaxed at Each Tier
+
+- **Tier 1 — Dedup threshold (0.95 → 0.70):** Allows more similar paths to be used, increasing the pool of available paths. Some generated examples may cover overlapping topics.
+- **Tier 2 — Quality threshold (0.7 → 0.5):** Accepts examples that score lower on the quality rubric (shorter answers, missing question marks, etc.). Still filters out clearly bad examples.
+- **Tier 3 — Temperature (0.7 → 0.9):** Increases LLM creativity/randomness. Produces more diverse but potentially less focused outputs.
+- **Tier 4 — Random sampling:** Switches from frequency-weighted to random node selection. Reduces bias toward hub nodes but may produce less coherent paths.
+- **Tier 5 — Aggressive:** All parameters at their most permissive. Quality threshold drops to 0.3, meaning only clearly broken examples are rejected.
+
+### Quality Impact Report
+
+After auto-tuning completes, a **Quality Impact Assessment** is displayed:
+
+```
+============================================================
+⚠️  QUALITY IMPACT ASSESSMENT (Auto-Tuning Mode)
+============================================================
+   🟡 Moderate quality trade-offs were applied.
+   Quality level: MODERATE — some parameters were relaxed.
+   Highest tuning tier used: 2 (Lower quality threshold)
+
+   Trade-offs applied:
+   • Dedup threshold lowered to 0.70 (default: 0.95) — some examples may be more similar
+   • Quality threshold lowered to 0.5 (default: 0.7)
+
+   💡 Recommendations:
+   • Review generated examples for accuracy before fine-tuning.
+============================================================
+```
+
+The quality levels are:
+
+| Level | Tier Reached | Meaning |
+|-------|:---:|------|
+| ✅ **HIGH** | 0 | All examples at default quality. No compromises. |
+| 🟡 **MODERATE** | 1–2 | Dedup or quality threshold relaxed. Review recommended. |
+| 🔴 **REDUCED** | 3–5 | Temperature, sampling, or aggressive settings used. Manual review strongly recommended. |
+
+### CLI Example
+
+```bash
+# Generate 500 examples, auto-adjusting to reach the target
+python kg2sft.py --graph makeup_knowledge_graph.graphml --count 500 --domain beauty_makeup --auto
+```
+
+### Web UI
+
+In the Streamlit UI (`kg2sftui.py`), enable auto mode with the **⚡ Auto-Tuning Mode** toggle in the sidebar. When enabled:
+- Temperature, quality threshold, dedup threshold, and sampling strategy controls are disabled (auto-managed)
+- Max path depth remains configurable
+- After generation, a **Quality Impact Assessment** panel shows the iteration breakdown, trade-offs, and recommendations
+
+### Programmatic API
+
+```python
+from kg2sft import AutoTuner
+
+tuner = AutoTuner(
+    graph_path="my_graph.graphml",
+    domain="beauty_makeup",
+    target_count=500,
+    max_depth=999,
+)
+
+dataset = tuner.run()
+tuner.print_auto_report(dataset)
+
+dataset.save_jsonl("output_training.jsonl")
+dataset.save_json("output_training.json")
 ```
 
 ---
@@ -370,7 +508,12 @@ python kg2sft.py --graph my_graph.graphml --count 50 --dedup-threshold 0.85
 python kg2sft.py --graph my_graph.graphml --count 100  # Expect ~40-60 after filtering
 ```
 
-**Option 4:** Use a larger, more diverse knowledge graph
+**Option 4:** Use auto-tuning mode (automatically adjusts all parameters)
+```bash
+python kg2sft.py --graph my_graph.graphml --count 100 --auto
+```
+
+**Option 5:** Use a larger, more diverse knowledge graph
 - More nodes → more unique path combinations
 - More edge types → more diverse relationships
 - Better connectivity → richer multi-hop paths
@@ -634,7 +777,14 @@ Understanding the internal pipeline helps optimize your training data generation
   - Substance (30%): 50+ chars + sentences → 0.3; 30+ → 0.2; 20+ → 0.1
 - **Smart Partial Credit:** Proportional scoring based on quality, not binary pass/fail
 
-#### 6. **Dataset Management** (`TrainingDataset`)
+#### 7. **Auto-Tuning** (`AutoTuner`)
+- **Progressive relaxation**: 6 tiers from default to aggressive
+- **Per-iteration tracking**: Generates quality + cost metrics per tier
+- **Smart overshooting**: Requests 1.5x paths to compensate for rejections
+- **Quality impact reporting**: Classifies result quality as HIGH / MODERATE / REDUCED
+- **Graph capacity analysis**: Estimates max examples from graph structure
+
+#### 8. **Dataset Management** (`TrainingDataset`)
 - OpenAI fine-tuning format
 - Quality score tracking (internal)
 - Statistics generation
