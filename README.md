@@ -2,6 +2,7 @@
 
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://kg2sft.streamlit.app/)
 
 > **Transform your Knowledge Graphs into high-quality training data for fine-tuning Small Language Models (SLMs) using LLM synthesis via Azure OpenAI.**
 
@@ -41,8 +42,11 @@ kg2sft automatically converts Knowledge Graphs (GraphML format) into supervised 
 - 🔍 **Path Deduplication**: Jaccard similarity-based filtering for diverse training data
 - 📈 **Comprehensive Reporting**: Detailed cost, quality, and graph statistics
 - 🖥️ **Web UI (Optional)**: Streamlit-based UI with interactive graph visualization
+- 🌐 **Cloud Hosted**: Try it instantly at [kg2sft.streamlit.app](https://kg2sft.streamlit.app/) - no installation required
 
 ## 🚀 Quick Start
+
+> 💡 **Quick Option:** Try the [hosted web UI](https://kg2sft.streamlit.app/) instantly without any installation!
 
 ### Prerequisites
 
@@ -118,6 +122,12 @@ After successful execution, kg2sft creates:
 
 For users who prefer a graphical interface, kg2sft provides an optional **Streamlit-based web UI** (`kg2sftui.py`) with interactive graph visualization.
 
+### 🌐 Try It Online (No Installation Required)
+
+**Live Demo:** [https://kg2sft.streamlit.app/](https://kg2sft.streamlit.app/)
+
+You can use kg2sft directly in your browser without any local installation. Simply visit the link above, configure your Azure OpenAI credentials, upload your GraphML file, and start generating training data.
+
 ### UI Features
 
 - 📁 **Drag-and-drop file upload** for GraphML files
@@ -160,6 +170,7 @@ This will open a browser window (typically at `http://localhost:8501`) with the 
 
 | Use Case | Recommended |
 |----------|-------------|
+| Quick try without installation | 🌐 **[Cloud UI](https://kg2sft.streamlit.app/)** |
 | Quick exploration of a new knowledge graph | 🖥️ **Web UI** |
 | Visual inspection of graph structure | 🖥️ **Web UI** |
 | One-time generation with manual review | 🖥️ **Web UI** |
