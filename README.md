@@ -937,7 +937,6 @@ MIT License - see LICENSE file for details
 
 - **Issues:** [GitHub Issues](https://github.com/easonlai/kg2sft/issues)
 - **Discussions:** [GitHub Discussions](https://github.com/easonlai/kg2sft/discussions)
-- **Email:** your.email@example.com
 
 ---
 
