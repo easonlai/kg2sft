@@ -1,0 +1,421 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">
+  
+  <!-- Key definitions for attributes -->
+  <key id="name" for="node" attr.name="name" attr.type="string"/>
+  <key id="type" for="node" attr.name="type" attr.type="string"/>
+  <key id="relationship" for="edge" attr.name="relationship" attr.type="string"/>
+  
+  <graph id="TechnologyKG" edgedefault="directed">
+    
+    <!-- ============================================ -->
+    <!-- PROGRAMMING LANGUAGES -->
+    <!-- ============================================ -->
+    <node id="lang1">
+      <data key="name">Python</data>
+      <data key="type">Programming Language</data>
+    </node>
+    <node id="lang2">
+      <data key="name">JavaScript</data>
+      <data key="type">Programming Language</data>
+    </node>
+    <node id="lang3">
+      <data key="name">Java</data>
+      <data key="type">Programming Language</data>
+    </node>
+    <node id="lang4">
+      <data key="name">TypeScript</data>
+      <data key="type">Programming Language</data>
+    </node>
+    <node id="lang5">
+      <data key="name">Rust</data>
+      <data key="type">Programming Language</data>
+    </node>
+    
+    <!-- ============================================ -->
+    <!-- FRAMEWORKS -->
+    <!-- ============================================ -->
+    <node id="fw1">
+      <data key="name">Django</data>
+      <data key="type">Framework</data>
+    </node>
+    <node id="fw2">
+      <data key="name">FastAPI</data>
+      <data key="type">Framework</data>
+    </node>
+    <node id="fw3">
+      <data key="name">React</data>
+      <data key="type">Framework</data>
+    </node>
+    <node id="fw4">
+      <data key="name">Node.js</data>
+      <data key="type">Framework</data>
+    </node>
+    <node id="fw5">
+      <data key="name">Spring Boot</data>
+      <data key="type">Framework</data>
+    </node>
+    <node id="fw6">
+      <data key="name">Next.js</data>
+      <data key="type">Framework</data>
+    </node>
+    <node id="fw7">
+      <data key="name">Actix Web</data>
+      <data key="type">Framework</data>
+    </node>
+    
+    <!-- ============================================ -->
+    <!-- USE CASES -->
+    <!-- ============================================ -->
+    <node id="use1">
+      <data key="name">Web Development</data>
+      <data key="type">Use Case</data>
+    </node>
+    <node id="use2">
+      <data key="name">Data Science</data>
+      <data key="type">Use Case</data>
+    </node>
+    <node id="use3">
+      <data key="name">Machine Learning</data>
+      <data key="type">Use Case</data>
+    </node>
+    <node id="use4">
+      <data key="name">API Development</data>
+      <data key="type">Use Case</data>
+    </node>
+    <node id="use5">
+      <data key="name">Mobile Development</data>
+      <data key="type">Use Case</data>
+    </node>
+    <node id="use6">
+      <data key="name">Systems Programming</data>
+      <data key="type">Use Case</data>
+    </node>
+    <node id="use7">
+      <data key="name">Enterprise Applications</data>
+      <data key="type">Use Case</data>
+    </node>
+    
+    <!-- ============================================ -->
+    <!-- FEATURES -->
+    <!-- ============================================ -->
+    <node id="feat1">
+      <data key="name">High Performance</data>
+      <data key="type">Feature</data>
+    </node>
+    <node id="feat2">
+      <data key="name">Easy to Learn</data>
+      <data key="type">Feature</data>
+    </node>
+    <node id="feat3">
+      <data key="name">Type Safety</data>
+      <data key="type">Feature</data>
+    </node>
+    <node id="feat4">
+      <data key="name">Memory Safety</data>
+      <data key="type">Feature</data>
+    </node>
+    <node id="feat5">
+      <data key="name">Large Ecosystem</data>
+      <data key="type">Feature</data>
+    </node>
+    <node id="feat6">
+      <data key="name">Asynchronous Support</data>
+      <data key="type">Feature</data>
+    </node>
+    <node id="feat7">
+      <data key="name">Cross-Platform</data>
+      <data key="type">Feature</data>
+    </node>
+    <node id="feat8">
+      <data key="name">Static Typing</data>
+      <data key="type">Feature</data>
+    </node>
+    
+    <!-- ============================================ -->
+    <!-- COMPANIES/ORGANIZATIONS -->
+    <!-- ============================================ -->
+    <node id="org1">
+      <data key="name">Google</data>
+      <data key="type">Organization</data>
+    </node>
+    <node id="org2">
+      <data key="name">Meta</data>
+      <data key="type">Organization</data>
+    </node>
+    <node id="org3">
+      <data key="name">Microsoft</data>
+      <data key="type">Organization</data>
+    </node>
+    <node id="org4">
+      <data key="name">Mozilla</data>
+      <data key="type">Organization</data>
+    </node>
+    
+    <!-- ============================================ -->
+    <!-- LANGUAGE → FRAMEWORK RELATIONSHIPS -->
+    <!-- ============================================ -->
+    <edge source="lang1" target="fw1">
+      <data key="relationship">POWERS</data>
+    </edge>
+    <edge source="lang1" target="fw2">
+      <data key="relationship">POWERS</data>
+    </edge>
+    
+    <edge source="lang2" target="fw3">
+      <data key="relationship">POWERS</data>
+    </edge>
+    <edge source="lang2" target="fw4">
+      <data key="relationship">POWERS</data>
+    </edge>
+    
+    <edge source="lang3" target="fw5">
+      <data key="relationship">POWERS</data>
+    </edge>
+    
+    <edge source="lang4" target="fw3">
+      <data key="relationship">POWERS</data>
+    </edge>
+    <edge source="lang4" target="fw6">
+      <data key="relationship">POWERS</data>
+    </edge>
+    
+    <edge source="lang5" target="fw7">
+      <data key="relationship">POWERS</data>
+    </edge>
+    
+    <!-- ============================================ -->
+    <!-- LANGUAGE → FEATURE RELATIONSHIPS -->
+    <!-- ============================================ -->
+    <edge source="lang1" target="feat2">
+      <data key="relationship">HAS_FEATURE</data>
+    </edge>
+    <edge source="lang1" target="feat5">
+      <data key="relationship">HAS_FEATURE</data>
+    </edge>
+    <edge source="lang1" target="feat7">
+      <data key="relationship">HAS_FEATURE</data>
+    </edge>
+    
+    <edge source="lang2" target="feat5">
+      <data key="relationship">HAS_FEATURE</data>
+    </edge>
+    <edge source="lang2" target="feat6">
+      <data key="relationship">HAS_FEATURE</data>
+    </edge>
+    <edge source="lang2" target="feat7">
+      <data key="relationship">HAS_FEATURE</data>
+    </edge>
+    
+    <edge source="lang3" target="feat1">
+      <data key="relationship">HAS_FEATURE</data>
+    </edge>
+    <edge source="lang3" target="feat3">
+      <data key="relationship">HAS_FEATURE</data>
+    </edge>
+    <edge source="lang3" target="feat7">
+      <data key="relationship">HAS_FEATURE</data>
+    </edge>
+    
+    <edge source="lang4" target="feat3">
+      <data key="relationship">HAS_FEATURE</data>
+    </edge>
+    <edge source="lang4" target="feat8">
+      <data key="relationship">HAS_FEATURE</data>
+    </edge>
+    
+    <edge source="lang5" target="feat1">
+      <data key="relationship">HAS_FEATURE</data>
+    </edge>
+    <edge source="lang5" target="feat4">
+      <data key="relationship">HAS_FEATURE</data>
+    </edge>
+    <edge source="lang5" target="feat3">
+      <data key="relationship">HAS_FEATURE</data>
+    </edge>
+    
+    <!-- ============================================ -->
+    <!-- LANGUAGE → USE CASE RELATIONSHIPS -->
+    <!-- ============================================ -->
+    <edge source="lang1" target="use1">
+      <data key="relationship">USED_FOR</data>
+    </edge>
+    <edge source="lang1" target="use2">
+      <data key="relationship">USED_FOR</data>
+    </edge>
+    <edge source="lang1" target="use3">
+      <data key="relationship">USED_FOR</data>
+    </edge>
+    <edge source="lang1" target="use4">
+      <data key="relationship">USED_FOR</data>
+    </edge>
+    
+    <edge source="lang2" target="use1">
+      <data key="relationship">USED_FOR</data>
+    </edge>
+    <edge source="lang2" target="use4">
+      <data key="relationship">USED_FOR</data>
+    </edge>
+    <edge source="lang2" target="use5">
+      <data key="relationship">USED_FOR</data>
+    </edge>
+    
+    <edge source="lang3" target="use1">
+      <data key="relationship">USED_FOR</data>
+    </edge>
+    <edge source="lang3" target="use7">
+      <data key="relationship">USED_FOR</data>
+    </edge>
+    <edge source="lang3" target="use5">
+      <data key="relationship">USED_FOR</data>
+    </edge>
+    
+    <edge source="lang4" target="use1">
+      <data key="relationship">USED_FOR</data>
+    </edge>
+    <edge source="lang4" target="use4">
+      <data key="relationship">USED_FOR</data>
+    </edge>
+    
+    <edge source="lang5" target="use6">
+      <data key="relationship">USED_FOR</data>
+    </edge>
+    <edge source="lang5" target="use1">
+      <data key="relationship">USED_FOR</data>
+    </edge>
+    
+    <!-- ============================================ -->
+    <!-- FRAMEWORK → USE CASE RELATIONSHIPS -->
+    <!-- ============================================ -->
+    <edge source="fw1" target="use1">
+      <data key="relationship">SUPPORTS</data>
+    </edge>
+    <edge source="fw1" target="use7">
+      <data key="relationship">SUPPORTS</data>
+    </edge>
+    
+    <edge source="fw2" target="use4">
+      <data key="relationship">SUPPORTS</data>
+    </edge>
+    <edge source="fw2" target="use1">
+      <data key="relationship">SUPPORTS</data>
+    </edge>
+    
+    <edge source="fw3" target="use1">
+      <data key="relationship">SUPPORTS</data>
+    </edge>
+    
+    <edge source="fw4" target="use1">
+      <data key="relationship">SUPPORTS</data>
+    </edge>
+    <edge source="fw4" target="use4">
+      <data key="relationship">SUPPORTS</data>
+    </edge>
+    
+    <edge source="fw5" target="use7">
+      <data key="relationship">SUPPORTS</data>
+    </edge>
+    <edge source="fw5" target="use4">
+      <data key="relationship">SUPPORTS</data>
+    </edge>
+    
+    <edge source="fw6" target="use1">
+      <data key="relationship">SUPPORTS</data>
+    </edge>
+    
+    <edge source="fw7" target="use1">
+      <data key="relationship">SUPPORTS</data>
+    </edge>
+    <edge source="fw7" target="use4">
+      <data key="relationship">SUPPORTS</data>
+    </edge>
+    
+    <!-- ============================================ -->
+    <!-- FRAMEWORK → FEATURE RELATIONSHIPS -->
+    <!-- ============================================ -->
+    <edge source="fw2" target="feat1">
+      <data key="relationship">PROVIDES</data>
+    </edge>
+    <edge source="fw2" target="feat6">
+      <data key="relationship">PROVIDES</data>
+    </edge>
+    
+    <edge source="fw3" target="feat1">
+      <data key="relationship">PROVIDES</data>
+    </edge>
+    <edge source="fw3" target="feat5">
+      <data key="relationship">PROVIDES</data>
+    </edge>
+    
+    <edge source="fw4" target="feat6">
+      <data key="relationship">PROVIDES</data>
+    </edge>
+    <edge source="fw4" target="feat5">
+      <data key="relationship">PROVIDES</data>
+    </edge>
+    
+    <edge source="fw5" target="feat7">
+      <data key="relationship">PROVIDES</data>
+    </edge>
+    <edge source="fw5" target="feat5">
+      <data key="relationship">PROVIDES</data>
+    </edge>
+    
+    <edge source="fw6" target="feat1">
+      <data key="relationship">PROVIDES</data>
+    </edge>
+    <edge source="fw6" target="feat3">
+      <data key="relationship">PROVIDES</data>
+    </edge>
+    
+    <edge source="fw7" target="feat1">
+      <data key="relationship">PROVIDES</data>
+    </edge>
+    <edge source="fw7" target="feat4">
+      <data key="relationship">PROVIDES</data>
+    </edge>
+    
+    <!-- ============================================ -->
+    <!-- ORGANIZATION → LANGUAGE RELATIONSHIPS -->
+    <!-- ============================================ -->
+    <edge source="org1" target="lang1">
+      <data key="relationship">USES</data>
+    </edge>
+    <edge source="org1" target="lang3">
+      <data key="relationship">USES</data>
+    </edge>
+    
+    <edge source="org2" target="lang2">
+      <data key="relationship">CREATED</data>
+    </edge>
+    <edge source="org2" target="fw3">
+      <data key="relationship">CREATED</data>
+    </edge>
+    
+    <edge source="org3" target="lang4">
+      <data key="relationship">CREATED</data>
+    </edge>
+    <edge source="org3" target="lang1">
+      <data key="relationship">USES</data>
+    </edge>
+    
+    <edge source="org4" target="lang5">
+      <data key="relationship">SPONSORS</data>
+    </edge>
+    <edge source="org4" target="lang2">
+      <data key="relationship">MAINTAINS</data>
+    </edge>
+    
+    <!-- ============================================ -->
+    <!-- LANGUAGE EVOLUTION RELATIONSHIPS -->
+    <!-- ============================================ -->
+    <edge source="lang4" target="lang2">
+      <data key="relationship">EXTENDS</data>
+    </edge>
+    
+    <edge source="fw6" target="fw3">
+      <data key="relationship">BUILT_ON</data>
+    </edge>
+    
+  </graph>
+</graphml>

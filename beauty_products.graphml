@@ -1,0 +1,704 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">
+  
+  <!-- Key definitions for attributes -->
+  <key id="name" for="node" attr.name="name" attr.type="string"/>
+  <key id="type" for="node" attr.name="type" attr.type="string"/>
+  <key id="relationship" for="edge" attr.name="relationship" attr.type="string"/>
+  
+  <graph id="BeautyKG" edgedefault="directed">
+    
+    <!-- ============================================ -->
+    <!-- BRANDS -->
+    <!-- ============================================ -->
+    <node id="brand1">
+      <data key="name">Shiseido</data>
+      <data key="type">Brand</data>
+    </node>
+    <node id="brand2">
+      <data key="name">La Mer</data>
+      <data key="type">Brand</data>
+    </node>
+    <node id="brand3">
+      <data key="name">Estée Lauder</data>
+      <data key="type">Brand</data>
+    </node>
+    <node id="brand4">
+      <data key="name">SK-II</data>
+      <data key="type">Brand</data>
+    </node>
+    <node id="brand5">
+      <data key="name">Drunk Elephant</data>
+      <data key="type">Brand</data>
+    </node>
+    
+    <!-- ============================================ -->
+    <!-- PRODUCTS -->
+    <!-- ============================================ -->
+    
+    <!-- Shiseido Products -->
+    <node id="prod1">
+      <data key="name">Shiseido Essential Energy Moisturizing Cream</data>
+      <data key="type">Product</data>
+    </node>
+    <node id="prod2">
+      <data key="name">Shiseido Ultimune Power Infusing Concentrate</data>
+      <data key="type">Product</data>
+    </node>
+    <node id="prod3">
+      <data key="name">Shiseido Perfect Cleansing Oil</data>
+      <data key="type">Product</data>
+    </node>
+    <node id="prod4">
+      <data key="name">Shiseido Urban Environment UV Protection Cream</data>
+      <data key="type">Product</data>
+    </node>
+    
+    <!-- La Mer Products -->
+    <node id="prod5">
+      <data key="name">La Mer Crème de la Mer</data>
+      <data key="type">Product</data>
+    </node>
+    <node id="prod6">
+      <data key="name">La Mer The Concentrate</data>
+      <data key="type">Product</data>
+    </node>
+    <node id="prod7">
+      <data key="name">La Mer The Cleansing Foam</data>
+      <data key="type">Product</data>
+    </node>
+    <node id="prod8">
+      <data key="name">La Mer The Treatment Lotion</data>
+      <data key="type">Product</data>
+    </node>
+    
+    <!-- Estée Lauder Products -->
+    <node id="prod9">
+      <data key="name">Estée Lauder Advanced Night Repair Serum</data>
+      <data key="type">Product</data>
+    </node>
+    <node id="prod10">
+      <data key="name">Estée Lauder DayWear Multi-Protection Anti-Oxidant Cream</data>
+      <data key="type">Product</data>
+    </node>
+    <node id="prod11">
+      <data key="name">Estée Lauder Perfectionist Pro Rapid Firm + Lift Treatment</data>
+      <data key="type">Product</data>
+    </node>
+    <node id="prod12">
+      <data key="name">Estée Lauder Resilience Multi-Effect Eye Cream</data>
+      <data key="type">Product</data>
+    </node>
+    
+    <!-- SK-II Products -->
+    <node id="prod13">
+      <data key="name">SK-II Facial Treatment Essence</data>
+      <data key="type">Product</data>
+    </node>
+    <node id="prod14">
+      <data key="name">SK-II GenOptics Aura Essence</data>
+      <data key="type">Product</data>
+    </node>
+    <node id="prod15">
+      <data key="name">SK-II Skinpower Cream</data>
+      <data key="type">Product</data>
+    </node>
+    <node id="prod16">
+      <data key="name">SK-II Facial Treatment Mask</data>
+      <data key="type">Product</data>
+    </node>
+    
+    <!-- Drunk Elephant Products -->
+    <node id="prod17">
+      <data key="name">Drunk Elephant C-Firma Vitamin C Day Serum</data>
+      <data key="type">Product</data>
+    </node>
+    <node id="prod18">
+      <data key="name">Drunk Elephant Protini Polypeptide Cream</data>
+      <data key="type">Product</data>
+    </node>
+    <node id="prod19">
+      <data key="name">Drunk Elephant T.L.C. Framboos Glycolic Night Serum</data>
+      <data key="type">Product</data>
+    </node>
+    <node id="prod20">
+      <data key="name">Drunk Elephant Lala Retro Whipped Cream</data>
+      <data key="type">Product</data>
+    </node>
+    
+    <!-- ============================================ -->
+    <!-- INGREDIENTS -->
+    <!-- ============================================ -->
+    <node id="ing1">
+      <data key="name">Hyaluronic Acid</data>
+      <data key="type">Ingredient</data>
+    </node>
+    <node id="ing2">
+      <data key="name">Retinol</data>
+      <data key="type">Ingredient</data>
+    </node>
+    <node id="ing3">
+      <data key="name">Vitamin C</data>
+      <data key="type">Ingredient</data>
+    </node>
+    <node id="ing4">
+      <data key="name">Niacinamide</data>
+      <data key="type">Ingredient</data>
+    </node>
+    <node id="ing5">
+      <data key="name">Ceramides</data>
+      <data key="type">Ingredient</data>
+    </node>
+    <node id="ing6">
+      <data key="name">Peptides</data>
+      <data key="type">Ingredient</data>
+    </node>
+    <node id="ing7">
+      <data key="name">Glycolic Acid</data>
+      <data key="type">Ingredient</data>
+    </node>
+    <node id="ing8">
+      <data key="name">Salicylic Acid</data>
+      <data key="type">Ingredient</data>
+    </node>
+    <node id="ing9">
+      <data key="name">Pitera</data>
+      <data key="type">Ingredient</data>
+    </node>
+    <node id="ing10">
+      <data key="name">Miracle Broth</data>
+      <data key="type">Ingredient</data>
+    </node>
+    <node id="ing11">
+      <data key="name">Squalane</data>
+      <data key="type">Ingredient</data>
+    </node>
+    <node id="ing12">
+      <data key="name">Zinc Oxide</data>
+      <data key="type">Ingredient</data>
+    </node>
+    <node id="ing13">
+      <data key="name">Ferulic Acid</data>
+      <data key="type">Ingredient</data>
+    </node>
+    <node id="ing14">
+      <data key="name">Alpha Arbutin</data>
+      <data key="type">Ingredient</data>
+    </node>
+    <node id="ing15">
+      <data key="name">Bifida Ferment Lysate</data>
+      <data key="type">Ingredient</data>
+    </node>
+    
+    <!-- ============================================ -->
+    <!-- BENEFITS -->
+    <!-- ============================================ -->
+    <node id="ben1">
+      <data key="name">Anti-Aging</data>
+      <data key="type">Benefit</data>
+    </node>
+    <node id="ben2">
+      <data key="name">Deep Hydration</data>
+      <data key="type">Benefit</data>
+    </node>
+    <node id="ben3">
+      <data key="name">Skin Brightening</data>
+      <data key="type">Benefit</data>
+    </node>
+    <node id="ben4">
+      <data key="name">Pore Minimizing</data>
+      <data key="type">Benefit</data>
+    </node>
+    <node id="ben5">
+      <data key="name">Acne Treatment</data>
+      <data key="type">Benefit</data>
+    </node>
+    <node id="ben6">
+      <data key="name">UV Protection</data>
+      <data key="type">Benefit</data>
+    </node>
+    <node id="ben7">
+      <data key="name">Wrinkle Reduction</data>
+      <data key="type">Benefit</data>
+    </node>
+    <node id="ben8">
+      <data key="name">Firmness</data>
+      <data key="type">Benefit</data>
+    </node>
+    <node id="ben9">
+      <data key="name">Skin Barrier Repair</data>
+      <data key="type">Benefit</data>
+    </node>
+    <node id="ben10">
+      <data key="name">Even Skin Tone</data>
+      <data key="type">Benefit</data>
+    </node>
+    <node id="ben11">
+      <data key="name">Antioxidant Protection</data>
+      <data key="type">Benefit</data>
+    </node>
+    <node id="ben12">
+      <data key="name">Exfoliation</data>
+      <data key="type">Benefit</data>
+    </node>
+    <node id="ben13">
+      <data key="name">Radiance Boost</data>
+      <data key="type">Benefit</data>
+    </node>
+    
+    <!-- ============================================ -->
+    <!-- BRAND → PRODUCT RELATIONSHIPS -->
+    <!-- ============================================ -->
+    <edge source="brand1" target="prod1">
+      <data key="relationship">MANUFACTURES</data>
+    </edge>
+    <edge source="brand1" target="prod2">
+      <data key="relationship">MANUFACTURES</data>
+    </edge>
+    <edge source="brand1" target="prod3">
+      <data key="relationship">MANUFACTURES</data>
+    </edge>
+    <edge source="brand1" target="prod4">
+      <data key="relationship">MANUFACTURES</data>
+    </edge>
+    
+    <edge source="brand2" target="prod5">
+      <data key="relationship">MANUFACTURES</data>
+    </edge>
+    <edge source="brand2" target="prod6">
+      <data key="relationship">MANUFACTURES</data>
+    </edge>
+    <edge source="brand2" target="prod7">
+      <data key="relationship">MANUFACTURES</data>
+    </edge>
+    <edge source="brand2" target="prod8">
+      <data key="relationship">MANUFACTURES</data>
+    </edge>
+    
+    <edge source="brand3" target="prod9">
+      <data key="relationship">MANUFACTURES</data>
+    </edge>
+    <edge source="brand3" target="prod10">
+      <data key="relationship">MANUFACTURES</data>
+    </edge>
+    <edge source="brand3" target="prod11">
+      <data key="relationship">MANUFACTURES</data>
+    </edge>
+    <edge source="brand3" target="prod12">
+      <data key="relationship">MANUFACTURES</data>
+    </edge>
+    
+    <edge source="brand4" target="prod13">
+      <data key="relationship">MANUFACTURES</data>
+    </edge>
+    <edge source="brand4" target="prod14">
+      <data key="relationship">MANUFACTURES</data>
+    </edge>
+    <edge source="brand4" target="prod15">
+      <data key="relationship">MANUFACTURES</data>
+    </edge>
+    <edge source="brand4" target="prod16">
+      <data key="relationship">MANUFACTURES</data>
+    </edge>
+    
+    <edge source="brand5" target="prod17">
+      <data key="relationship">MANUFACTURES</data>
+    </edge>
+    <edge source="brand5" target="prod18">
+      <data key="relationship">MANUFACTURES</data>
+    </edge>
+    <edge source="brand5" target="prod19">
+      <data key="relationship">MANUFACTURES</data>
+    </edge>
+    <edge source="brand5" target="prod20">
+      <data key="relationship">MANUFACTURES</data>
+    </edge>
+    
+    <!-- ============================================ -->
+    <!-- PRODUCT → INGREDIENT RELATIONSHIPS -->
+    <!-- ============================================ -->
+    
+    <!-- Shiseido Products -->
+    <edge source="prod1" target="ing1">
+      <data key="relationship">CONTAINS</data>
+    </edge>
+    <edge source="prod1" target="ing5">
+      <data key="relationship">CONTAINS</data>
+    </edge>
+    <edge source="prod2" target="ing1">
+      <data key="relationship">CONTAINS</data>
+    </edge>
+    <edge source="prod2" target="ing6">
+      <data key="relationship">CONTAINS</data>
+    </edge>
+    <edge source="prod3" target="ing11">
+      <data key="relationship">CONTAINS</data>
+    </edge>
+    <edge source="prod4" target="ing12">
+      <data key="relationship">CONTAINS</data>
+    </edge>
+    <edge source="prod4" target="ing1">
+      <data key="relationship">CONTAINS</data>
+    </edge>
+    
+    <!-- La Mer Products -->
+    <edge source="prod5" target="ing10">
+      <data key="relationship">CONTAINS</data>
+    </edge>
+    <edge source="prod5" target="ing1">
+      <data key="relationship">CONTAINS</data>
+    </edge>
+    <edge source="prod6" target="ing10">
+      <data key="relationship">CONTAINS</data>
+    </edge>
+    <edge source="prod6" target="ing6">
+      <data key="relationship">CONTAINS</data>
+    </edge>
+    <edge source="prod7" target="ing10">
+      <data key="relationship">CONTAINS</data>
+    </edge>
+    <edge source="prod8" target="ing10">
+      <data key="relationship">CONTAINS</data>
+    </edge>
+    <edge source="prod8" target="ing13">
+      <data key="relationship">CONTAINS</data>
+    </edge>
+    
+    <!-- Estée Lauder Products -->
+    <edge source="prod9" target="ing15">
+      <data key="relationship">CONTAINS</data>
+    </edge>
+    <edge source="prod9" target="ing1">
+      <data key="relationship">CONTAINS</data>
+    </edge>
+    <edge source="prod9" target="ing6">
+      <data key="relationship">CONTAINS</data>
+    </edge>
+    <edge source="prod10" target="ing3">
+      <data key="relationship">CONTAINS</data>
+    </edge>
+    <edge source="prod10" target="ing1">
+      <data key="relationship">CONTAINS</data>
+    </edge>
+    <edge source="prod11" target="ing2">
+      <data key="relationship">CONTAINS</data>
+    </edge>
+    <edge source="prod11" target="ing6">
+      <data key="relationship">CONTAINS</data>
+    </edge>
+    <edge source="prod12" target="ing1">
+      <data key="relationship">CONTAINS</data>
+    </edge>
+    <edge source="prod12" target="ing6">
+      <data key="relationship">CONTAINS</data>
+    </edge>
+    
+    <!-- SK-II Products -->
+    <edge source="prod13" target="ing9">
+      <data key="relationship">CONTAINS</data>
+    </edge>
+    <edge source="prod14" target="ing9">
+      <data key="relationship">CONTAINS</data>
+    </edge>
+    <edge source="prod14" target="ing4">
+      <data key="relationship">CONTAINS</data>
+    </edge>
+    <edge source="prod14" target="ing14">
+      <data key="relationship">CONTAINS</data>
+    </edge>
+    <edge source="prod15" target="ing9">
+      <data key="relationship">CONTAINS</data>
+    </edge>
+    <edge source="prod15" target="ing4">
+      <data key="relationship">CONTAINS</data>
+    </edge>
+    <edge source="prod16" target="ing9">
+      <data key="relationship">CONTAINS</data>
+    </edge>
+    <edge source="prod16" target="ing1">
+      <data key="relationship">CONTAINS</data>
+    </edge>
+    
+    <!-- Drunk Elephant Products -->
+    <edge source="prod17" target="ing3">
+      <data key="relationship">CONTAINS</data>
+    </edge>
+    <edge source="prod17" target="ing13">
+      <data key="relationship">CONTAINS</data>
+    </edge>
+    <edge source="prod18" target="ing6">
+      <data key="relationship">CONTAINS</data>
+    </edge>
+    <edge source="prod18" target="ing1">
+      <data key="relationship">CONTAINS</data>
+    </edge>
+    <edge source="prod19" target="ing7">
+      <data key="relationship">CONTAINS</data>
+    </edge>
+    <edge source="prod19" target="ing8">
+      <data key="relationship">CONTAINS</data>
+    </edge>
+    <edge source="prod20" target="ing5">
+      <data key="relationship">CONTAINS</data>
+    </edge>
+    <edge source="prod20" target="ing11">
+      <data key="relationship">CONTAINS</data>
+    </edge>
+    
+    <!-- ============================================ -->
+    <!-- INGREDIENT → BENEFIT RELATIONSHIPS -->
+    <!-- ============================================ -->
+    <edge source="ing1" target="ben2">
+      <data key="relationship">PROVIDES</data>
+    </edge>
+    <edge source="ing1" target="ben9">
+      <data key="relationship">PROVIDES</data>
+    </edge>
+    
+    <edge source="ing2" target="ben1">
+      <data key="relationship">PROVIDES</data>
+    </edge>
+    <edge source="ing2" target="ben7">
+      <data key="relationship">PROVIDES</data>
+    </edge>
+    <edge source="ing2" target="ben10">
+      <data key="relationship">PROVIDES</data>
+    </edge>
+    
+    <edge source="ing3" target="ben3">
+      <data key="relationship">PROVIDES</data>
+    </edge>
+    <edge source="ing3" target="ben11">
+      <data key="relationship">PROVIDES</data>
+    </edge>
+    <edge source="ing3" target="ben13">
+      <data key="relationship">PROVIDES</data>
+    </edge>
+    
+    <edge source="ing4" target="ben3">
+      <data key="relationship">PROVIDES</data>
+    </edge>
+    <edge source="ing4" target="ben4">
+      <data key="relationship">PROVIDES</data>
+    </edge>
+    <edge source="ing4" target="ben9">
+      <data key="relationship">PROVIDES</data>
+    </edge>
+    
+    <edge source="ing5" target="ben9">
+      <data key="relationship">PROVIDES</data>
+    </edge>
+    <edge source="ing5" target="ben2">
+      <data key="relationship">PROVIDES</data>
+    </edge>
+    
+    <edge source="ing6" target="ben1">
+      <data key="relationship">PROVIDES</data>
+    </edge>
+    <edge source="ing6" target="ben8">
+      <data key="relationship">PROVIDES</data>
+    </edge>
+    <edge source="ing6" target="ben7">
+      <data key="relationship">PROVIDES</data>
+    </edge>
+    
+    <edge source="ing7" target="ben12">
+      <data key="relationship">PROVIDES</data>
+    </edge>
+    <edge source="ing7" target="ben3">
+      <data key="relationship">PROVIDES</data>
+    </edge>
+    <edge source="ing7" target="ben10">
+      <data key="relationship">PROVIDES</data>
+    </edge>
+    
+    <edge source="ing8" target="ben5">
+      <data key="relationship">PROVIDES</data>
+    </edge>
+    <edge source="ing8" target="ben4">
+      <data key="relationship">PROVIDES</data>
+    </edge>
+    <edge source="ing8" target="ben12">
+      <data key="relationship">PROVIDES</data>
+    </edge>
+    
+    <edge source="ing9" target="ben13">
+      <data key="relationship">PROVIDES</data>
+    </edge>
+    <edge source="ing9" target="ben10">
+      <data key="relationship">PROVIDES</data>
+    </edge>
+    <edge source="ing9" target="ben2">
+      <data key="relationship">PROVIDES</data>
+    </edge>
+    
+    <edge source="ing10" target="ben2">
+      <data key="relationship">PROVIDES</data>
+    </edge>
+    <edge source="ing10" target="ben1">
+      <data key="relationship">PROVIDES</data>
+    </edge>
+    <edge source="ing10" target="ben9">
+      <data key="relationship">PROVIDES</data>
+    </edge>
+    
+    <edge source="ing11" target="ben2">
+      <data key="relationship">PROVIDES</data>
+    </edge>
+    <edge source="ing11" target="ben9">
+      <data key="relationship">PROVIDES</data>
+    </edge>
+    
+    <edge source="ing12" target="ben6">
+      <data key="relationship">PROVIDES</data>
+    </edge>
+    
+    <edge source="ing13" target="ben11">
+      <data key="relationship">PROVIDES</data>
+    </edge>
+    <edge source="ing13" target="ben3">
+      <data key="relationship">PROVIDES</data>
+    </edge>
+    
+    <edge source="ing14" target="ben3">
+      <data key="relationship">PROVIDES</data>
+    </edge>
+    <edge source="ing14" target="ben10">
+      <data key="relationship">PROVIDES</data>
+    </edge>
+    
+    <edge source="ing15" target="ben1">
+      <data key="relationship">PROVIDES</data>
+    </edge>
+    <edge source="ing15" target="ben9">
+      <data key="relationship">PROVIDES</data>
+    </edge>
+    
+    <!-- ============================================ -->
+    <!-- PRODUCT → BENEFIT DIRECT RELATIONSHIPS -->
+    <!-- ============================================ -->
+    
+    <!-- Shiseido -->
+    <edge source="prod1" target="ben2">
+      <data key="relationship">TARGETS</data>
+    </edge>
+    <edge source="prod1" target="ben9">
+      <data key="relationship">TARGETS</data>
+    </edge>
+    <edge source="prod2" target="ben1">
+      <data key="relationship">TARGETS</data>
+    </edge>
+    <edge source="prod2" target="ben8">
+      <data key="relationship">TARGETS</data>
+    </edge>
+    <edge source="prod4" target="ben6">
+      <data key="relationship">TARGETS</data>
+    </edge>
+    <edge source="prod4" target="ben11">
+      <data key="relationship">TARGETS</data>
+    </edge>
+    
+    <!-- La Mer -->
+    <edge source="prod5" target="ben1">
+      <data key="relationship">TARGETS</data>
+    </edge>
+    <edge source="prod5" target="ben2">
+      <data key="relationship">TARGETS</data>
+    </edge>
+    <edge source="prod5" target="ben9">
+      <data key="relationship">TARGETS</data>
+    </edge>
+    <edge source="prod6" target="ben13">
+      <data key="relationship">TARGETS</data>
+    </edge>
+    <edge source="prod6" target="ben8">
+      <data key="relationship">TARGETS</data>
+    </edge>
+    
+    <!-- Estée Lauder -->
+    <edge source="prod9" target="ben1">
+      <data key="relationship">TARGETS</data>
+    </edge>
+    <edge source="prod9" target="ben7">
+      <data key="relationship">TARGETS</data>
+    </edge>
+    <edge source="prod9" target="ben2">
+      <data key="relationship">TARGETS</data>
+    </edge>
+    <edge source="prod10" target="ben11">
+      <data key="relationship">TARGETS</data>
+    </edge>
+    <edge source="prod10" target="ben2">
+      <data key="relationship">TARGETS</data>
+    </edge>
+    <edge source="prod11" target="ben8">
+      <data key="relationship">TARGETS</data>
+    </edge>
+    <edge source="prod11" target="ben7">
+      <data key="relationship">TARGETS</data>
+    </edge>
+    
+    <!-- SK-II -->
+    <edge source="prod13" target="ben13">
+      <data key="relationship">TARGETS</data>
+    </edge>
+    <edge source="prod13" target="ben10">
+      <data key="relationship">TARGETS</data>
+    </edge>
+    <edge source="prod14" target="ben3">
+      <data key="relationship">TARGETS</data>
+    </edge>
+    <edge source="prod14" target="ben13">
+      <data key="relationship">TARGETS</data>
+    </edge>
+    <edge source="prod15" target="ben8">
+      <data key="relationship">TARGETS</data>
+    </edge>
+    <edge source="prod15" target="ben1">
+      <data key="relationship">TARGETS</data>
+    </edge>
+    
+    <!-- Drunk Elephant -->
+    <edge source="prod17" target="ben3">
+      <data key="relationship">TARGETS</data>
+    </edge>
+    <edge source="prod17" target="ben11">
+      <data key="relationship">TARGETS</data>
+    </edge>
+    <edge source="prod18" target="ben2">
+      <data key="relationship">TARGETS</data>
+    </edge>
+    <edge source="prod18" target="ben8">
+      <data key="relationship">TARGETS</data>
+    </edge>
+    <edge source="prod19" target="ben12">
+      <data key="relationship">TARGETS</data>
+    </edge>
+    <edge source="prod19" target="ben3">
+      <data key="relationship">TARGETS</data>
+    </edge>
+    <edge source="prod20" target="ben2">
+      <data key="relationship">TARGETS</data>
+    </edge>
+    <edge source="prod20" target="ben9">
+      <data key="relationship">TARGETS</data>
+    </edge>
+    
+    <!-- ============================================ -->
+    <!-- INGREDIENT SYNERGIES (Advanced Relationships) -->
+    <!-- ============================================ -->
+    <edge source="ing3" target="ing13">
+      <data key="relationship">SYNERGIZES_WITH</data>
+    </edge>
+    <edge source="ing1" target="ing5">
+      <data key="relationship">SYNERGIZES_WITH</data>
+    </edge>
+    <edge source="ing7" target="ing8">
+      <data key="relationship">SYNERGIZES_WITH</data>
+    </edge>
+    <edge source="ing4" target="ing14">
+      <data key="relationship">SYNERGIZES_WITH</data>
+    </edge>
+    
+  </graph>
+</graphml>

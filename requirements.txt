@@ -1,0 +1,10 @@
+# kg2sft: Knowledge Graph to SFT Training Data Generator
+# Python dependencies
+
+# Core dependencies
+networkx>=3.0          # Graph data structure and algorithms
+python-dotenv>=1.0.0   # Environment variable management
+openai>=1.0.0          # Azure OpenAI SDK for LLM integration
+
+# Optional dependencies
+tqdm>=4.65.0           # Progress bar (optional but recommended)
