@@ -1,0 +1,306 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns
+    http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">
+
+  <key id="d0" for="node" attr.name="label" attr.type="string"/>
+  <key id="d1" for="node" attr.name="tier" attr.type="string"/>
+  <key id="d2" for="node" attr.name="type" attr.type="string"/>
+  <key id="d3" for="node" attr.name="description" attr.type="string"/>
+  <key id="d4" for="node" attr.name="color" attr.type="string"/>
+  <key id="d5" for="node" attr.name="size" attr.type="double"/>
+  <key id="d6" for="edge" attr.name="label" attr.type="string"/>
+  <key id="d7" for="edge" attr.name="relationship_type" attr.type="string"/>
+  <key id="d8" for="edge" attr.name="reasoning" attr.type="string"/>
+
+  <graph id="G" edgedefault="directed">
+
+    <!-- ============================================================ -->
+    <!-- TIER 1: CUSTOMER CHARACTERISTICS -->
+    <!-- ============================================================ -->
+
+    <!-- SKIN DEPTH - ALL 7 LEVELS -->
+    <node id="depth_fairest"><data key="d0">Skin Depth: Fairest</data><data key="d1">Tier 1</data><data key="d2">skin_depth</data><data key="d3">Fitzpatrick I-II - Very light, minimal sun tan</data><data key="d4">#4A90E2</data><data key="d5">12</data></node>
+    <node id="depth_fair"><data key="d0">Skin Depth: Fair</data><data key="d1">Tier 1</data><data key="d2">skin_depth</data><data key="d3">Fitzpatrick II-III - Light, minimal sun exposure</data><data key="d4">#4A90E2</data><data key="d5">12</data></node>
+    <node id="depth_light_medium"><data key="d0">Skin Depth: Light-Medium</data><data key="d1">Tier 1</data><data key="d2">skin_depth</data><data key="d3">Fitzpatrick III - Light with some depth</data><data key="d4">#4A90E2</data><data key="d5">12</data></node>
+    <node id="depth_medium"><data key="d0">Skin Depth: Medium</data><data key="d1">Tier 1</data><data key="d2">skin_depth</data><data key="d3">Fitzpatrick III-IV - Balanced depth, some sun tan</data><data key="d4">#4A90E2</data><data key="d5">12</data></node>
+    <node id="depth_tan"><data key="d0">Skin Depth: Tan</data><data key="d1">Tier 1</data><data key="d2">skin_depth</data><data key="d3">Fitzpatrick IV-V - Deep tan, significant sun exposure</data><data key="d4">#4A90E2</data><data key="d5">12</data></node>
+    <node id="depth_deep"><data key="d0">Skin Depth: Deep</data><data key="d1">Tier 1</data><data key="d2">skin_depth</data><data key="d3">Fitzpatrick V - Very deep, rich tone</data><data key="d4">#4A90E2</data><data key="d5">12</data></node>
+    <node id="depth_deepest"><data key="d0">Skin Depth: Deepest</data><data key="d1">Tier 1</data><data key="d2">skin_depth</data><data key="d3">Fitzpatrick VI - Darkest, richest depth</data><data key="d4">#4A90E2</data><data key="d5">12</data></node>
+
+    <!-- UNDERTONE - ALL 4 TYPES -->
+    <node id="undertone_warm"><data key="d0">Undertone: Warm</data><data key="d1">Tier 1</data><data key="d2">undertone</data><data key="d3">Golden, peachy, yellow - Greenish veins, Gold jewelry flatters</data><data key="d4">#E24A4A</data><data key="d5">14</data></node>
+    <node id="undertone_cool"><data key="d0">Undertone: Cool</data><data key="d1">Tier 1</data><data key="d2">undertone</data><data key="d3">Pink, rosy, blue - Blue veins, Silver jewelry flatters</data><data key="d4">#E24A4A</data><data key="d5">14</data></node>
+    <node id="undertone_neutral"><data key="d0">Undertone: Neutral</data><data key="d1">Tier 1</data><data key="d2">undertone</data><data key="d3">Balanced warm and cool - Mixed veins, Both jewelry work</data><data key="d4">#E24A4A</data><data key="d5">14</data></node>
+    <node id="undertone_olive"><data key="d0">Undertone: Olive</data><data key="d1">Tier 1</data><data key="d2">undertone</data><data key="d3">Greenish cast - Often underserved in makeup industry</data><data key="d4">#E24A4A</data><data key="d5">14</data></node>
+
+    <!-- SKIN TYPE - ALL 5 TYPES -->
+    <node id="skin_oily"><data key="d0">Skin Type: Oily</data><data key="d1">Tier 1</data><data key="d2">skin_type</data><data key="d3">Excess sebum, shine - Needs oil control</data><data key="d4">#5B9BD5</data><data key="d5">13</data></node>
+    <node id="skin_dry"><data key="d0">Skin Type: Dry</data><data key="d1">Tier 1</data><data key="d2">skin_type</data><data key="d3">Low sebum, tight, flaky - Needs hydration</data><data key="d4">#5B9BD5</data><data key="d5">13</data></node>
+    <node id="skin_combination"><data key="d0">Skin Type: Combination</data><data key="d1">Tier 1</data><data key="d2">skin_type</data><data key="d3">Oily T-zone, dry cheeks - Needs balance</data><data key="d4">#5B9BD5</data><data key="d5">13</data></node>
+    <node id="skin_normal"><data key="d0">Skin Type: Normal</data><data key="d1">Tier 1</data><data key="d2">skin_type</data><data key="d3">Balanced sebum and hydration - Minimal issues</data><data key="d4">#5B9BD5</data><data key="d5">13</data></node>
+    <node id="skin_sensitive"><data key="d0">Skin Type: Sensitive</data><data key="d1">Tier 1</data><data key="d2">skin_type</data><data key="d3">Reactive, easily irritated - Needs gentle formula</data><data key="d4">#5B9BD5</data><data key="d5">13</data></node>
+
+    <!-- SKIN CONCERN - ALL 8 TYPES -->
+    <node id="concern_acne"><data key="d0">Concern: Acne</data><data key="d1">Tier 1</data><data key="d2">skin_concern</data><data key="d3">Active blemishes - Needs oil-control, lightweight, non-comedogenic</data><data key="d4">#9B59B6</data><data key="d5">13</data></node>
+    <node id="concern_dryness"><data key="d0">Concern: Dryness</data><data key="d1">Tier 1</data><data key="d2">skin_concern</data><data key="d3">Flaky, tight, lines - Needs hydration, dewy</data><data key="d4">#9B59B6</data><data key="d5">13</data></node>
+    <node id="concern_aging"><data key="d0">Concern: Aging</data><data key="d1">Tier 1</data><data key="d2">skin_concern</data><data key="d3">Fine lines, sagging - Needs lifting, luminous</data><data key="d4">#9B59B6</data><data key="d5">13</data></node>
+    <node id="concern_circles"><data key="d0">Concern: Dark Circles</data><data key="d1">Tier 1</data><data key="d2">skin_concern</data><data key="d3">Blue/purple cast - Needs color correction + luminous</data><data key="d4">#9B59B6</data><data key="d5">13</data></node>
+    <node id="concern_dullness"><data key="d0">Concern: Dullness</data><data key="d1">Tier 1</data><data key="d2">skin_concern</data><data key="d3">Lack of radiance - Needs luminous particles</data><data key="d4">#9B59B6</data><data key="d5">13</data></node>
+    <node id="concern_redness"><data key="d0">Concern: Redness</data><data key="d1">Tier 1</data><data key="d2">skin_concern</data><data key="d3">Inflammation, rosacea - Needs green corrector</data><data key="d4">#9B59B6</data><data key="d5">13</data></node>
+    <node id="concern_hyperpigmentation"><data key="d0">Concern: Hyperpigmentation</data><data key="d1">Tier 1</data><data key="d2">skin_concern</data><data key="d3">Dark spots, melasma, post-acne marks - Needs targeted high-coverage correction</data><data key="d4">#9B59B6</data><data key="d5">13</data></node>
+    <node id="concern_pores"><data key="d0">Concern: Large Pores</data><data key="d1">Tier 1</data><data key="d2">skin_concern</data><data key="d3">Visible pores - Needs pore-filling primer, mattifying, light coverage</data><data key="d4">#9B59B6</data><data key="d5">13</data></node>
+
+    <!-- ============================================================ -->
+    <!-- TIER 2: MAKEUP ATTRIBUTES -->
+    <!-- ============================================================ -->
+
+    <!-- FINISH - ALL 6 TYPES -->
+    <node id="finish_matte"><data key="d0">Finish: Matte</data><data key="d1">Tier 2</data><data key="d2">finish</data><data key="d3">Absorbs light - Large particles, no reflection</data><data key="d4">#2ECC71</data><data key="d5">14</data></node>
+    <node id="finish_satin"><data key="d0">Finish: Satin</data><data key="d1">Tier 2</data><data key="d2">finish</data><data key="d3">Soft diffuse reflection - Medium particles, balanced</data><data key="d4">#2ECC71</data><data key="d5">14</data></node>
+    <node id="finish_dewy"><data key="d0">Finish: Dewy</data><data key="d1">Tier 2</data><data key="d2">finish</data><data key="d3">Water-like reflection - Moisture-visible, fresh</data><data key="d4">#2ECC71</data><data key="d5">14</data></node>
+    <node id="finish_luminous"><data key="d0">Finish: Luminous</data><data key="d1">Tier 2</data><data key="d2">finish</data><data key="d3">Light scattering - Micro-reflective particles, glow</data><data key="d4">#2ECC71</data><data key="d5">14</data></node>
+    <node id="finish_shimmer"><data key="d0">Finish: Shimmer</data><data key="d1">Tier 2</data><data key="d2">finish</data><data key="d3">Direct reflection - Metallic particles, sparkle</data><data key="d4">#2ECC71</data><data key="d5">14</data></node>
+    <node id="finish_natural"><data key="d0">Finish: Natural</data><data key="d1">Tier 2</data><data key="d2">finish</data><data key="d3">Skin-like appearance - Minimal particles, second-skin effect</data><data key="d4">#2ECC71</data><data key="d5">14</data></node>
+
+    <!-- COVERAGE - ALL 4 LEVELS -->
+    <node id="coverage_sheer"><data key="d0">Coverage: Sheer</data><data key="d1">Tier 2</data><data key="d2">coverage</data><data key="d3">20-40% - Transparent, buildable</data><data key="d4">#27AE60</data><data key="d5">12</data></node>
+    <node id="coverage_light"><data key="d0">Coverage: Light</data><data key="d1">Tier 2</data><data key="d2">coverage</data><data key="d3">40-60% - Lightweight, skin showing</data><data key="d4">#27AE60</data><data key="d5">12</data></node>
+    <node id="coverage_medium"><data key="d0">Coverage: Medium</data><data key="d1">Tier 2</data><data key="d2">coverage</data><data key="d3">60-80% - Balanced, buildable</data><data key="d4">#27AE60</data><data key="d5">12</data></node>
+    <node id="coverage_full"><data key="d0">Coverage: Full</data><data key="d1">Tier 2</data><data key="d2">coverage</data><data key="d3">90-100% - Opaque, maximum</data><data key="d4">#27AE60</data><data key="d5">12</data></node>
+
+    <!-- FORMULATION - ALL 5 TYPES -->
+    <node id="formula_liquid"><data key="d0">Formulation: Liquid</data><data key="d1">Tier 2</data><data key="d2">formulation</data><data key="d3">Easy blending, buildable</data><data key="d4">#16A085</data><data key="d5">11</data></node>
+    <node id="formula_powder"><data key="d0">Formulation: Powder</data><data key="d1">Tier 2</data><data key="d2">formulation</data><data key="d3">Quick application, oil control</data><data key="d4">#16A085</data><data key="d5">11</data></node>
+    <node id="formula_cream"><data key="d0">Formulation: Cream</data><data key="d1">Tier 2</data><data key="d2">formulation</data><data key="d3">Hydrating, blendable</data><data key="d4">#16A085</data><data key="d5">11</data></node>
+    <node id="formula_stick"><data key="d0">Formulation: Stick</data><data key="d1">Tier 2</data><data key="d2">formulation</data><data key="d3">Portable, convenient</data><data key="d4">#16A085</data><data key="d5">11</data></node>
+    <node id="formula_cushion"><data key="d0">Formulation: Cushion</data><data key="d1">Tier 2</data><data key="d2">formulation</data><data key="d3">Hydrating, lightweight, portable</data><data key="d4">#16A085</data><data key="d5">11</data></node>
+
+    <!-- ============================================================ -->
+    <!-- TIER 3: COLOR THEORY -->
+    <!-- ============================================================ -->
+
+    <node id="color_warm_palette"><data key="d0">Color: Warm Palette</data><data key="d1">Tier 3</data><data key="d2">color_palette</data><data key="d3">Golden, peach, bronze, warm earth tones</data><data key="d4">#8E44AD</data><data key="d5">14</data></node>
+    <node id="color_cool_palette"><data key="d0">Color: Cool Palette</data><data key="d1">Tier 3</data><data key="d2">color_palette</data><data key="d3">Pink, rose, berry, mauve</data><data key="d4">#8E44AD</data><data key="d5">14</data></node>
+    <node id="color_neutral_palette"><data key="d0">Color: Neutral Palette</data><data key="d1">Tier 3</data><data key="d2">color_palette</data><data key="d3">Universal, versatile colors</data><data key="d4">#8E44AD</data><data key="d5">14</data></node>
+    <node id="correction_green"><data key="d0">Color Correction: Green</data><data key="d1">Tier 3</data><data key="d2">color_correction</data><data key="d3">Neutralizes red (color wheel opposite)</data><data key="d4">#9B59B6</data><data key="d5">13</data></node>
+    <node id="correction_peach"><data key="d0">Color Correction: Peach</data><data key="d1">Tier 3</data><data key="d2">color_correction</data><data key="d3">Neutralizes blue/purple on light-medium skin (color wheel opposite)</data><data key="d4">#9B59B6</data><data key="d5">13</data></node>
+    <node id="correction_orange"><data key="d0">Color Correction: Orange</data><data key="d1">Tier 3</data><data key="d2">color_correction</data><data key="d3">Neutralizes blue/purple on deep-deepest skin (stronger pigment needed)</data><data key="d4">#9B59B6</data><data key="d5">13</data></node>
+    <node id="correction_yellow"><data key="d0">Color Correction: Yellow</data><data key="d1">Tier 3</data><data key="d2">color_correction</data><data key="d3">Brightens sallow skin, neutralizes purple on medium-tan tones</data><data key="d4">#9B59B6</data><data key="d5">13</data></node>
+    <node id="correction_lavender"><data key="d0">Color Correction: Lavender</data><data key="d1">Tier 3</data><data key="d2">color_correction</data><data key="d3">Counteracts yellowish/sallow appearance, adds brightness to dull skin</data><data key="d4">#9B59B6</data><data key="d5">13</data></node>
+
+    <!-- ============================================================ -->
+    <!-- TIER 4: DECISION LOGIC -->
+    <!-- ============================================================ -->
+
+    <node id="logic_oily_matte"><data key="d0">Logic: Oily → Matte</data><data key="d1">Tier 4</data><data key="d2">decision_logic</data><data key="d3">Large particles absorb light (no shine)</data><data key="d4">#E67E22</data><data key="d5">13</data></node>
+    <node id="logic_dry_dewy"><data key="d0">Logic: Dry → Dewy</data><data key="d1">Tier 4</data><data key="d2">decision_logic</data><data key="d3">Moisture appearance + hydration</data><data key="d4">#E67E22</data><data key="d5">13</data></node>
+    <node id="logic_combo_satin"><data key="d0">Logic: Combination → Satin</data><data key="d1">Tier 4</data><data key="d2">decision_logic</data><data key="d3">Balanced finish for mixed needs</data><data key="d4">#E67E22</data><data key="d5">13</data></node>
+    <node id="logic_warm_colors"><data key="d0">Logic: Warm → Warm Colors</data><data key="d1">Tier 4</data><data key="d2">decision_logic</data><data key="d3">Color harmony (same temperature)</data><data key="d4">#E67E22</data><data key="d5">13</data></node>
+    <node id="logic_concern_luminous"><data key="d0">Logic: Concern → Luminous</data><data key="d1">Tier 4</data><data key="d2">decision_logic</data><data key="d3">Light scattering for dullness/aging/circles</data><data key="d4">#E67E22</data><data key="d5">13</data></node>
+    <node id="logic_cool_colors"><data key="d0">Logic: Cool → Cool Colors</data><data key="d1">Tier 4</data><data key="d2">decision_logic</data><data key="d3">Color harmony (same temperature)</data><data key="d4">#E67E22</data><data key="d5">13</data></node>
+    <node id="logic_neutral_colors"><data key="d0">Logic: Neutral → Neutral Colors</data><data key="d1">Tier 4</data><data key="d2">decision_logic</data><data key="d3">Flexible color harmony (both temperatures work)</data><data key="d4">#E67E22</data><data key="d5">13</data></node>
+    <node id="logic_olive_colors"><data key="d0">Logic: Olive → Warm/Earth Colors</data><data key="d1">Tier 4</data><data key="d2">decision_logic</data><data key="d3">Earth tones complement greenish undertone</data><data key="d4">#E67E22</data><data key="d5">13</data></node>
+
+    <!-- ============================================================ -->
+    <!-- TIER 5: APPLICATION PROCEDURES -->
+    <!-- ============================================================ -->
+
+    <node id="procedure_foundation_match"><data key="d0">Procedure: Foundation Matching</data><data key="d1">Tier 5</data><data key="d2">application_procedure</data><data key="d3">5-step: Depth → Undertone → Test → Validate</data><data key="d4">#C0392B</data><data key="d5">15</data></node>
+    <node id="procedure_concealer_circles"><data key="d0">Procedure: Concealer (Circles)</data><data key="d1">Tier 5</data><data key="d2">application_procedure</data><data key="d3">Peach corrector → Concealer 1 lighter → Highlight</data><data key="d4">#C0392B</data><data key="d5">14</data></node>
+    <node id="procedure_concealer_redness"><data key="d0">Procedure: Concealer (Redness)</data><data key="d1">Tier 5</data><data key="d2">application_procedure</data><data key="d3">Green corrector → Concealer → Set</data><data key="d4">#C0392B</data><data key="d5">14</data></node>
+    <node id="procedure_blush_lifted"><data key="d0">Procedure: Blush Placement</data><data key="d1">Tier 5</data><data key="d2">application_procedure</data><data key="d3">Apples + blend upward = lifted look</data><data key="d4">#C0392B</data><data key="d5">13</data></node>
+    <node id="procedure_concern_coverage"><data key="d0">Procedure: Concern Coverage</data><data key="d1">Tier 5</data><data key="d2">application_procedure</data><data key="d3">Match coverage to concern severity</data><data key="d4">#C0392B</data><data key="d5">13</data></node>
+    <node id="procedure_primer"><data key="d0">Procedure: Primer Application</data><data key="d1">Tier 5</data><data key="d2">application_procedure</data><data key="d3">Prep skin: fill pores, control oil, create adhesion for foundation</data><data key="d4">#C0392B</data><data key="d5">14</data></node>
+    <node id="procedure_setting"><data key="d0">Procedure: Setting/Finishing</data><data key="d1">Tier 5</data><data key="d2">application_procedure</data><data key="d3">Lock makeup: setting spray or powder to prevent transfer and extend wear</data><data key="d4">#C0392B</data><data key="d5">14</data></node>
+
+    <!-- ============================================================ -->
+    <!-- EDGES - COMPLETE CONNECTIONS -->
+    <!-- ============================================================ -->
+
+    <!-- DEPTH → PROCEDURE (All depths connect to foundation matching) -->
+    <edge source="depth_fairest" target="procedure_foundation_match"><data key="d6">input_to</data><data key="d7">application</data><data key="d8">Fairest depth feeds foundation algorithm</data></edge>
+    <edge source="depth_fair" target="procedure_foundation_match"><data key="d6">input_to</data><data key="d7">application</data><data key="d8">Fair depth feeds foundation algorithm</data></edge>
+    <edge source="depth_light_medium" target="procedure_foundation_match"><data key="d6">input_to</data><data key="d7">application</data><data key="d8">Light-medium depth feeds algorithm</data></edge>
+    <edge source="depth_medium" target="procedure_foundation_match"><data key="d6">input_to</data><data key="d7">application</data><data key="d8">Medium depth feeds algorithm</data></edge>
+    <edge source="depth_tan" target="procedure_foundation_match"><data key="d6">input_to</data><data key="d7">application</data><data key="d8">Tan depth feeds algorithm</data></edge>
+    <edge source="depth_deep" target="procedure_foundation_match"><data key="d6">input_to</data><data key="d7">application</data><data key="d8">Deep depth feeds algorithm</data></edge>
+    <edge source="depth_deepest" target="procedure_foundation_match"><data key="d6">input_to</data><data key="d7">application</data><data key="d8">Deepest depth feeds algorithm</data></edge>
+
+    <!-- UNDERTONE → COLOR PALETTE (All undertones map to palettes) -->
+    <edge source="undertone_warm" target="logic_warm_colors"><data key="d6">determines</data><data key="d7">decision</data><data key="d8">Warm undertone needs warm palette</data></edge>
+    <edge source="logic_warm_colors" target="color_warm_palette"><data key="d6">produces</data><data key="d7">solution</data><data key="d8">Warm color harmony</data></edge>
+    <edge source="undertone_cool" target="logic_cool_colors"><data key="d6">determines</data><data key="d7">decision</data><data key="d8">Cool undertone needs cool palette</data></edge>
+    <edge source="logic_cool_colors" target="color_cool_palette"><data key="d6">produces</data><data key="d7">solution</data><data key="d8">Cool color harmony</data></edge>
+    <edge source="undertone_neutral" target="logic_neutral_colors"><data key="d6">determines</data><data key="d7">decision</data><data key="d8">Neutral undertone = flexible</data></edge>
+    <edge source="logic_neutral_colors" target="color_neutral_palette"><data key="d6">produces</data><data key="d7">solution</data><data key="d8">Neutral color harmony - versatile</data></edge>
+    <edge source="undertone_olive" target="logic_olive_colors"><data key="d6">determines</data><data key="d7">decision</data><data key="d8">Olive undertone uses warm/earth</data></edge>
+    <edge source="logic_olive_colors" target="color_warm_palette"><data key="d6">produces</data><data key="d7">solution</data><data key="d8">Earth tone color harmony</data></edge>
+    <edge source="undertone_warm" target="procedure_foundation_match"><data key="d6">input_to</data><data key="d7">application</data><data key="d8">Undertone input to matching</data></edge>
+    <edge source="undertone_cool" target="procedure_foundation_match"><data key="d6">input_to</data><data key="d7">application</data><data key="d8">Undertone input to matching</data></edge>
+    <edge source="undertone_neutral" target="procedure_foundation_match"><data key="d6">input_to</data><data key="d7">application</data><data key="d8">Undertone input to matching</data></edge>
+    <edge source="undertone_olive" target="procedure_foundation_match"><data key="d6">input_to</data><data key="d7">application</data><data key="d8">Undertone input to matching</data></edge>
+
+    <!-- SKIN TYPE → FINISH (All types to appropriate finishes) -->
+    <edge source="skin_oily" target="logic_oily_matte"><data key="d6">requires</data><data key="d7">decision</data><data key="d8">Oily needs oil control</data></edge>
+    <edge source="logic_oily_matte" target="finish_matte"><data key="d6">recommends</data><data key="d7">attribute</data><data key="d8">Matte absorbs shine</data></edge>
+    <edge source="skin_dry" target="logic_dry_dewy"><data key="d6">requires</data><data key="d7">decision</data><data key="d8">Dry needs hydration</data></edge>
+    <edge source="logic_dry_dewy" target="finish_dewy"><data key="d6">recommends</data><data key="d7">attribute</data><data key="d8">Dewy = moisture effect</data></edge>
+    <edge source="skin_combination" target="logic_combo_satin"><data key="d6">requires</data><data key="d7">decision</data><data key="d8">Combination needs balance</data></edge>
+    <edge source="logic_combo_satin" target="finish_satin"><data key="d6">recommends</data><data key="d7">attribute</data><data key="d8">Satin balances zones</data></edge>
+    <edge source="skin_normal" target="finish_satin"><data key="d6">works_with</data><data key="d7">attribute</data><data key="d8">Normal skin = any finish</data></edge>
+    <edge source="skin_sensitive" target="finish_satin"><data key="d6">requires</data><data key="d7">attribute</data><data key="d8">Sensitive = gentle finish</data></edge>
+
+    <!-- CONCERN → FINISH (Connect all concerns to solutions) -->
+    <edge source="concern_acne" target="finish_matte"><data key="d6">requires</data><data key="d7">attribute</data><data key="d8">Acne needs oil control</data></edge>
+    <edge source="concern_dryness" target="finish_dewy"><data key="d6">requires</data><data key="d7">attribute</data><data key="d8">Dryness needs dewy</data></edge>
+    <edge source="concern_aging" target="logic_concern_luminous"><data key="d6">needs</data><data key="d7">decision</data><data key="d8">Aging needs lifting</data></edge>
+    <edge source="logic_concern_luminous" target="finish_luminous"><data key="d6">recommends</data><data key="d7">attribute</data><data key="d8">Luminous = optical lift</data></edge>
+    <edge source="concern_circles" target="correction_peach"><data key="d6">needs</data><data key="d7">correction</data><data key="d8">Blue needs peach (opposite)</data></edge>
+    <edge source="concern_circles" target="finish_luminous"><data key="d6">addresses</data><data key="d7">attribute</data><data key="d8">Luminous lifts optically</data></edge>
+    <edge source="concern_circles" target="procedure_concealer_circles"><data key="d6">requires_procedure</data><data key="d7">application</data><data key="d8">Correction + concealer</data></edge>
+    <edge source="concern_dullness" target="finish_luminous"><data key="d6">addresses</data><data key="d7">attribute</data><data key="d8">Luminous combats dullness</data></edge>
+    <edge source="concern_redness" target="correction_green"><data key="d6">needs</data><data key="d7">correction</data><data key="d8">Red needs green (opposite)</data></edge>
+    <edge source="concern_redness" target="procedure_concealer_redness"><data key="d6">requires_procedure</data><data key="d7">application</data><data key="d8">Green corrector + concealer</data></edge>
+    <edge source="concern_redness" target="finish_satin"><data key="d6">requires</data><data key="d7">attribute</data><data key="d8">Satin avoids emphasizing texture/irritation</data></edge>
+
+    <!-- CONCERN → COVERAGE (Map concerns to coverage levels) -->
+    <edge source="concern_acne" target="coverage_medium"><data key="d6">requires</data><data key="d7">coverage</data><data key="d8">Buildable for acne spots</data></edge>
+    <edge source="concern_circles" target="coverage_full"><data key="d6">requires</data><data key="d7">coverage</data><data key="d8">Full coverage for circles</data></edge>
+    <edge source="concern_dryness" target="coverage_light"><data key="d6">prefers</data><data key="d7">coverage</data><data key="d8">Light avoids cakey look</data></edge>
+    <edge source="concern_aging" target="coverage_medium"><data key="d6">requires</data><data key="d7">coverage</data><data key="d8">Buildable smooths lines</data></edge>
+    <edge source="concern_dullness" target="coverage_light"><data key="d6">prefers</data><data key="d7">coverage</data><data key="d8">Luminous matters more than coverage</data></edge>
+    <edge source="concern_redness" target="coverage_medium"><data key="d6">requires</data><data key="d7">coverage</data><data key="d8">Medium coverage to neutralize redness without caking</data></edge>
+
+    <!-- SKIN TYPE → FORMULATION (Connect all types to formulations) -->
+    <edge source="skin_oily" target="formula_powder"><data key="d6">prefers</data><data key="d7">formulation</data><data key="d8">Powder = max oil absorption</data></edge>
+    <edge source="skin_oily" target="formula_liquid"><data key="d6">works_with</data><data key="d7">formulation</data><data key="d8">Liquid with matte finish</data></edge>
+    <edge source="skin_dry" target="formula_cream"><data key="d6">prefers</data><data key="d7">formulation</data><data key="d8">Cream = hydrating</data></edge>
+    <edge source="skin_combination" target="formula_liquid"><data key="d6">works_with</data><data key="d7">formulation</data><data key="d8">Buildable for zones</data></edge>
+    <edge source="skin_normal" target="formula_liquid"><data key="d6">works_with</data><data key="d7">formulation</data><data key="d8">Any formulation works</data></edge>
+    <edge source="skin_sensitive" target="formula_cream"><data key="d6">prefers</data><data key="d7">formulation</data><data key="d8">Gentle, hydrating</data></edge>
+    <edge source="skin_sensitive" target="formula_cushion"><data key="d6">works_with</data><data key="d7">formulation</data><data key="d8">Lightweight, gentle</data></edge>
+
+    <!-- CONCERN → FORMULATION (Map concerns to formulations) -->
+    <edge source="concern_acne" target="formula_powder"><data key="d6">prefers</data><data key="d7">formulation</data><data key="d8">Oil control</data></edge>
+    <edge source="concern_acne" target="formula_liquid"><data key="d6">works_with</data><data key="d7">formulation</data><data key="d8">Lightweight non-comedogenic</data></edge>
+    <edge source="concern_dryness" target="formula_cream"><data key="d6">prefers</data><data key="d7">formulation</data><data key="d8">Hydrating formula</data></edge>
+    <edge source="concern_dullness" target="formula_liquid"><data key="d6">works_with</data><data key="d7">formulation</data><data key="d8">Easy to apply, buildable</data></edge>
+    <edge source="concern_aging" target="formula_cream"><data key="d6">prefers</data><data key="d7">formulation</data><data key="d8">Cream hydrates and avoids settling in lines</data></edge>
+    <edge source="concern_redness" target="formula_cream"><data key="d6">prefers</data><data key="d7">formulation</data><data key="d8">Cream is gentle, less irritating</data></edge>
+
+    <!-- COVERAGE → FINISH RELATIONSHIPS -->
+    <edge source="coverage_sheer" target="finish_natural"><data key="d6">pairs_with</data><data key="d7">attribute</data><data key="d8">Sheer needs natural look</data></edge>
+    <edge source="coverage_light" target="finish_satin"><data key="d6">pairs_with</data><data key="d7">attribute</data><data key="d8">Light = balanced finish</data></edge>
+    <edge source="coverage_medium" target="finish_satin"><data key="d6">pairs_with</data><data key="d7">attribute</data><data key="d8">Medium = versatile</data></edge>
+    <edge source="coverage_full" target="finish_natural"><data key="d6">pairs_with</data><data key="d7">attribute</data><data key="d8">Full needs natural blending</data></edge>
+
+    <!-- PROCEDURES → CONCERNS & CORRECTIONS -->
+    <edge source="correction_green" target="procedure_concealer_redness"><data key="d6">input_to</data><data key="d7">procedure</data><data key="d8">Green corrector step 1</data></edge>
+    <edge source="correction_peach" target="procedure_concealer_circles"><data key="d6">input_to</data><data key="d7">procedure</data><data key="d8">Peach corrector step 1</data></edge>
+
+    <!-- SPECIAL MENTION: Finish shimmer for specific uses -->
+    <edge source="finish_shimmer" target="concern_dullness"><data key="d6">enhances</data><data key="d7">attribute</data><data key="d8">Shimmer adds sparkle dimension</data></edge>
+
+    <!-- FORMULATION STICK & CUSHION special uses -->
+    <edge source="formula_stick" target="coverage_sheer"><data key="d6">provides</data><data key="d7">formulation</data><data key="d8">Stick formula = portable, sheer</data></edge>
+    <edge source="skin_normal" target="formula_cushion"><data key="d6">works_with</data><data key="d7">formulation</data><data key="d8">Cushion = lightweight, hydrating</data></edge>
+    <edge source="formula_cushion" target="coverage_light"><data key="d6">provides</data><data key="d7">coverage</data><data key="d8">Cushion = light to medium</data></edge>
+
+    <!-- BLUSH PROCEDURE -->
+    <edge source="procedure_blush_lifted" target="concern_aging"><data key="d6">addresses</data><data key="d7">procedure</data><data key="d8">Placement creates lift</data></edge>
+
+    <!-- COVERAGE PROCEDURES -->
+    <edge source="concern_acne" target="procedure_concern_coverage"><data key="d6">requires_specific</data><data key="d7">procedure</data><data key="d8">Match coverage to concern</data></edge>
+
+    <!-- SHIMMER & STICK ADDITIONAL CONNECTIONS -->
+    <edge source="skin_normal" target="finish_shimmer"><data key="d6">works_with</data><data key="d7">attribute</data><data key="d8">Normal skin can handle shimmer for special occasions</data></edge>
+    <edge source="skin_normal" target="formula_stick"><data key="d6">works_with</data><data key="d7">formulation</data><data key="d8">Stick for on-the-go touch-ups</data></edge>
+    <edge source="skin_combination" target="formula_stick"><data key="d6">works_with</data><data key="d7">formulation</data><data key="d8">Stick for targeted T-zone touch-ups</data></edge>
+
+    <!-- DEPTH-SPECIFIC COLOR CORRECTION (deep skin needs stronger correctors) -->
+    <edge source="depth_deep" target="correction_orange"><data key="d6">requires</data><data key="d7">correction</data><data key="d8">Deep skin needs orange corrector instead of peach</data></edge>
+    <edge source="depth_deepest" target="correction_orange"><data key="d6">requires</data><data key="d7">correction</data><data key="d8">Deepest skin needs orange/red-orange corrector</data></edge>
+    <edge source="correction_orange" target="procedure_concealer_circles"><data key="d6">input_to</data><data key="d7">procedure</data><data key="d8">Orange corrector step 1 for deep skin</data></edge>
+
+    <!-- AVOID RELATIONSHIPS (negative recommendations) -->
+    <edge source="skin_oily" target="finish_dewy"><data key="d6">avoid</data><data key="d7">contraindication</data><data key="d8">Dewy adds unwanted shine to oily skin</data></edge>
+    <edge source="skin_dry" target="finish_matte"><data key="d6">avoid</data><data key="d7">contraindication</data><data key="d8">Matte emphasizes dryness and flaking</data></edge>
+    <edge source="concern_aging" target="finish_shimmer"><data key="d6">avoid</data><data key="d7">contraindication</data><data key="d8">Shimmer highlights fine lines and texture</data></edge>
+    <edge source="concern_aging" target="formula_powder"><data key="d6">avoid</data><data key="d7">contraindication</data><data key="d8">Powder settles into fine lines</data></edge>
+    <edge source="concern_acne" target="formula_cream"><data key="d6">avoid</data><data key="d7">contraindication</data><data key="d8">Heavy cream can clog pores and worsen acne</data></edge>
+
+    <!-- HYPERPIGMENTATION CONNECTIONS -->
+    <edge source="concern_hyperpigmentation" target="coverage_full"><data key="d6">requires</data><data key="d7">coverage</data><data key="d8">Full coverage needed to conceal dark spots and melasma</data></edge>
+    <edge source="concern_hyperpigmentation" target="finish_satin"><data key="d6">requires</data><data key="d7">attribute</data><data key="d8">Satin finish balances coverage without emphasizing texture</data></edge>
+    <edge source="concern_hyperpigmentation" target="formula_liquid"><data key="d6">prefers</data><data key="d7">formulation</data><data key="d8">Liquid is buildable for targeted spot coverage</data></edge>
+    <edge source="concern_hyperpigmentation" target="procedure_concern_coverage"><data key="d6">requires_specific</data><data key="d7">procedure</data><data key="d8">Layer coverage on spots without over-applying elsewhere</data></edge>
+    <edge source="concern_hyperpigmentation" target="correction_peach"><data key="d6">needs</data><data key="d7">correction</data><data key="d8">Peach corrector for dark spots on light-medium skin</data></edge>
+    <edge source="concern_hyperpigmentation" target="correction_orange"><data key="d6">needs</data><data key="d7">correction</data><data key="d8">Orange corrector for dark spots on deep skin</data></edge>
+
+    <!-- LARGE PORES CONNECTIONS -->
+    <edge source="concern_pores" target="finish_matte"><data key="d6">requires</data><data key="d7">attribute</data><data key="d8">Matte minimizes visible pore appearance</data></edge>
+    <edge source="concern_pores" target="formula_powder"><data key="d6">prefers</data><data key="d7">formulation</data><data key="d8">Powder blurs and fills pore appearance</data></edge>
+    <edge source="concern_pores" target="coverage_light"><data key="d6">prefers</data><data key="d7">coverage</data><data key="d8">Heavy coverage settles into pores - light is better</data></edge>
+    <edge source="concern_pores" target="procedure_primer"><data key="d6">requires_procedure</data><data key="d7">application</data><data key="d8">Pore-filling primer is essential first step</data></edge>
+    <edge source="concern_pores" target="finish_shimmer"><data key="d6">avoid</data><data key="d7">contraindication</data><data key="d8">Shimmer draws attention to pore texture</data></edge>
+    <edge source="concern_pores" target="finish_dewy"><data key="d6">avoid</data><data key="d7">contraindication</data><data key="d8">Dewy finish can emphasize pore visibility</data></edge>
+
+    <!-- YELLOW CORRECTOR CONNECTIONS -->
+    <edge source="depth_medium" target="correction_yellow"><data key="d6">works_with</data><data key="d7">correction</data><data key="d8">Medium skin uses yellow to cancel purple/blue tones</data></edge>
+    <edge source="depth_tan" target="correction_yellow"><data key="d6">works_with</data><data key="d7">correction</data><data key="d8">Tan skin uses yellow to brighten and cancel purple</data></edge>
+    <edge source="correction_yellow" target="procedure_concealer_circles"><data key="d6">input_to</data><data key="d7">procedure</data><data key="d8">Yellow corrector step 1 for medium skin circles</data></edge>
+
+    <!-- LAVENDER CORRECTOR CONNECTIONS -->
+    <edge source="concern_dullness" target="correction_lavender"><data key="d6">needs</data><data key="d7">correction</data><data key="d8">Lavender neutralizes yellowish sallow tones</data></edge>
+    <edge source="correction_lavender" target="finish_luminous"><data key="d6">enhances</data><data key="d7">attribute</data><data key="d8">Lavender correction + luminous finish = maximum brightness</data></edge>
+
+    <!-- PRIMER PROCEDURE CONNECTIONS -->
+    <edge source="skin_oily" target="procedure_primer"><data key="d6">requires_procedure</data><data key="d7">application</data><data key="d8">Mattifying primer controls oil and extends wear</data></edge>
+    <edge source="skin_combination" target="procedure_primer"><data key="d6">requires_procedure</data><data key="d7">application</data><data key="d8">Zone-specific primer balances oily and dry areas</data></edge>
+    <edge source="concern_acne" target="procedure_primer"><data key="d6">requires_procedure</data><data key="d7">application</data><data key="d8">Primer creates barrier between skin and makeup</data></edge>
+
+    <!-- SETTING PROCEDURE CONNECTIONS -->
+    <edge source="skin_oily" target="procedure_setting"><data key="d6">requires_procedure</data><data key="d7">application</data><data key="d8">Setting prevents oil breakdown throughout day</data></edge>
+    <edge source="finish_matte" target="procedure_setting"><data key="d6">requires_procedure</data><data key="d7">application</data><data key="d8">Matte finish needs setting to maintain all day</data></edge>
+    <edge source="coverage_full" target="procedure_setting"><data key="d6">requires_procedure</data><data key="d7">application</data><data key="d8">Full coverage needs locking in to prevent transfer</data></edge>
+    <edge source="concern_acne" target="procedure_setting"><data key="d6">requires_procedure</data><data key="d7">application</data><data key="d8">Setting prevents transfer onto blemishes</data></edge>
+
+    <!-- DEPTH → COLOR CORRECTION (lighter depths → peach) -->
+    <edge source="depth_fairest" target="correction_peach"><data key="d6">works_with</data><data key="d7">correction</data><data key="d8">Fairest skin uses peach to cancel blue/purple circles</data></edge>
+    <edge source="depth_fair" target="correction_peach"><data key="d6">works_with</data><data key="d7">correction</data><data key="d8">Fair skin uses peach to cancel blue/purple circles</data></edge>
+    <edge source="depth_light_medium" target="correction_peach"><data key="d6">works_with</data><data key="d7">correction</data><data key="d8">Light-medium skin uses peach for correction</data></edge>
+
+    <!-- BLUSH PROCEDURE → COLOR PALETTES -->
+    <edge source="color_warm_palette" target="procedure_blush_lifted"><data key="d6">input_to</data><data key="d7">color</data><data key="d8">Warm blush colors (peach, coral) for warm undertones</data></edge>
+    <edge source="color_cool_palette" target="procedure_blush_lifted"><data key="d6">input_to</data><data key="d7">color</data><data key="d8">Cool blush colors (pink, berry, mauve) for cool undertones</data></edge>
+
+    <!-- CONCERN COVERAGE PROCEDURE → ADDITIONAL CONCERNS -->
+    <edge source="concern_circles" target="procedure_concern_coverage"><data key="d6">requires_specific</data><data key="d7">procedure</data><data key="d8">Match concealer coverage to circle severity</data></edge>
+    <edge source="concern_redness" target="procedure_concern_coverage"><data key="d6">requires_specific</data><data key="d7">procedure</data><data key="d8">Layer coverage on red areas without over-applying</data></edge>
+    <edge source="concern_aging" target="procedure_concern_coverage"><data key="d6">requires_specific</data><data key="d7">procedure</data><data key="d8">Strategic coverage placement to avoid settling in lines</data></edge>
+
+    <!-- CROSS-CATEGORY: MISSING FORMULATION EDGES -->
+    <edge source="concern_circles" target="formula_cream"><data key="d6">prefers</data><data key="d7">formulation</data><data key="d8">Cream concealer is standard for under-eye area</data></edge>
+    <edge source="concern_dryness" target="formula_cushion"><data key="d6">works_with</data><data key="d7">formulation</data><data key="d8">Cushion provides hydration throughout day</data></edge>
+    <edge source="skin_dry" target="formula_liquid"><data key="d6">works_with</data><data key="d7">formulation</data><data key="d8">Hydrating liquid foundations work for dry skin</data></edge>
+    <edge source="skin_dry" target="formula_cushion"><data key="d6">works_with</data><data key="d7">formulation</data><data key="d8">Cushion is naturally hydrating for dry skin</data></edge>
+
+    <!-- CROSS-CATEGORY: FINISH_NATURAL CONNECTIONS -->
+    <edge source="skin_normal" target="finish_natural"><data key="d6">works_with</data><data key="d7">attribute</data><data key="d8">Natural finish is ideal for balanced skin</data></edge>
+    <edge source="skin_sensitive" target="finish_natural"><data key="d6">works_with</data><data key="d7">attribute</data><data key="d8">Natural finish avoids heavy products on reactive skin</data></edge>
+
+    <!-- CROSS-CATEGORY: SKIN TYPE → COVERAGE -->
+    <edge source="skin_normal" target="coverage_sheer"><data key="d6">works_with</data><data key="d7">coverage</data><data key="d8">Normal skin needs minimal coverage</data></edge>
+    <edge source="skin_normal" target="coverage_light"><data key="d6">works_with</data><data key="d7">coverage</data><data key="d8">Light coverage for everyday natural look</data></edge>
+    <edge source="skin_sensitive" target="coverage_light"><data key="d6">prefers</data><data key="d7">coverage</data><data key="d8">Light coverage minimizes product on reactive skin</data></edge>
+
+    <!-- ADDITIONAL AVOID EDGES -->
+    <edge source="skin_sensitive" target="formula_powder"><data key="d6">avoid</data><data key="d7">contraindication</data><data key="d8">Powder application can irritate reactive skin</data></edge>
+    <edge source="concern_dryness" target="formula_powder"><data key="d6">avoid</data><data key="d7">contraindication</data><data key="d8">Powder emphasizes flaking and dehydration</data></edge>
+    <edge source="skin_oily" target="formula_cream"><data key="d6">avoid</data><data key="d7">contraindication</data><data key="d8">Cream adds oil to already oily skin</data></edge>
+    <edge source="concern_redness" target="finish_shimmer"><data key="d6">avoid</data><data key="d7">contraindication</data><data key="d8">Shimmer draws attention to inflamed areas</data></edge>
+
+  </graph>
+</graphml>

@@ -27,10 +27,17 @@ Dependencies:
 Usage:
     # Quick start with sample files
     python kg2sft.py --graph technology_knowledge.graphml --count 50
-    python kg2sft.py --graph beauty_products.graphml --count 50 --domain beauty
+    python kg2sft.py --graph beauty_products.graphml --count 50 --domain beauty_product
+    python kg2sft.py --graph makeup_knowledge_graph.graphml --count 50 --domain beauty_makeup
     
     # Or with your own graph
     python kg2sft.py --graph my_graph.graphml --count 100
+
+Domain Templates:
+    - generic:        General-purpose knowledge graph Q&A generation
+    - beauty_product: Beauty products domain (brands, products, ingredients, skincare)
+    - beauty_makeup:  Makeup consultation domain (skin types, undertones, finishes,
+                     coverage, color theory, application techniques)
 
 Configuration:
     Create .env file with:
@@ -194,14 +201,52 @@ class Graph:
         return list(self.graph.edges())
     
     def get_node_label(self, node_id: str) -> str:
-        """Get human-readable label for node"""
+        """Get human-readable label for node.
+        
+        Checks common GraphML attribute names in priority order:
+        name, label, title, display_name, text, value.
+        Falls back to first available string attribute, then node_id.
+        """
         attrs = self.node_attributes.get(node_id, {})
-        return attrs.get("name", attrs.get("label", node_id))
+        # Check common label attribute names in priority order
+        for key in ("name", "label", "title", "display_name", "text", "value"):
+            if key in attrs and attrs[key]:
+                return attrs[key]
+        # Fallback: use first non-empty string attribute as label
+        for key, val in attrs.items():
+            if isinstance(val, str) and val and key not in ("id", "type", "category", "color", "shape", "tier"):
+                return val
+        return node_id
     
     def get_edge_relationship(self, source: str, target: str) -> str:
-        """Get relationship type for edge"""
+        """Get relationship type for edge.
+        
+        Checks common GraphML attribute names in priority order:
+        label, relationship_type, relationship, rel, type, edge_type,
+        connection_type, relation, predicate.
+        Falls back to first available string attribute, then 'RELATED_TO'.
+        """
         attrs = self.edge_attributes.get((source, target), {})
-        return attrs.get("relationship", attrs.get("rel", "RELATED_TO"))
+        # Check common edge label attribute names in priority order
+        for key in ("label", "relationship_type", "relationship", "rel",
+                    "type", "edge_type", "connection_type", "relation", "predicate"):
+            if key in attrs and attrs[key]:
+                return attrs[key]
+        # Fallback: use first non-empty string attribute as relationship
+        for key, val in attrs.items():
+            if isinstance(val, str) and val and key not in ("id", "color", "weight", "reasoning"):
+                return val
+        return "RELATED_TO"
+    
+    def get_node_description(self, node_id: str) -> str:
+        """Get description/detail for node (from 'description' or 'desc' attribute)"""
+        attrs = self.node_attributes.get(node_id, {})
+        return attrs.get("description", attrs.get("desc", ""))
+    
+    def get_edge_reasoning(self, source: str, target: str) -> str:
+        """Get reasoning/rationale for edge (from 'reasoning' attribute)"""
+        attrs = self.edge_attributes.get((source, target), {})
+        return attrs.get("reasoning", "")
     
     def get_neighbors(self, node: str, depth: int = 1) -> Dict:
         """Get neighbors at specific depth"""
@@ -342,13 +387,34 @@ class PathExtractor:
                     duplicates_skipped += 1
                     continue
                 
-                path_str = " → ".join([
-                    graph.get_node_label(n) for n in path
-                ])
+                # Build path string with edge labels between nodes
+                parts = [graph.get_node_label(path[0])]
+                for j in range(1, len(path)):
+                    edge_label = graph.get_edge_relationship(path[j-1], path[j])
+                    parts.append(f"-[{edge_label}]->")
+                    parts.append(graph.get_node_label(path[j]))
+                path_str = " ".join(parts)
+                
+                # Build rich context with descriptions and reasoning
+                rich_lines = []
+                for j, node_id in enumerate(path):
+                    label = graph.get_node_label(node_id)
+                    desc = graph.get_node_description(node_id)
+                    rich_lines.append(f"  [{label}]" + (f" - {desc}" if desc else ""))
+                    if j < len(path) - 1:
+                        edge_label = graph.get_edge_relationship(path[j], path[j+1])
+                        reasoning = graph.get_edge_reasoning(path[j], path[j+1])
+                        edge_line = f"    --({edge_label})-->"
+                        if reasoning:
+                            edge_line += f" (Reasoning: {reasoning})"
+                        rich_lines.append(edge_line)
+                rich_context = "\n".join(rich_lines)
+                
                 paths.append({
                     "start": start_node,
                     "nodes": path,
                     "path_str": path_str,
+                    "rich_context": rich_context,
                     "length": len(path)
                 })
             
@@ -388,15 +454,68 @@ class PromptTemplate:
     """Generate LLM prompts from graph paths"""
     
     @staticmethod
-    def create_prompt_from_path(path_str: str, domain: str = "generic") -> str:
-        """Create LLM prompt from graph path"""
+    def create_prompt_from_path(path_str: str, domain: str = "generic", rich_context: str = "") -> str:
+        """Create LLM prompt from graph path.
         
-        if domain == "beauty":
+        Args:
+            path_str: Path string with edge labels (e.g., "A -[requires]-> B")
+            domain: Domain template key:
+                - 'generic': General-purpose knowledge graph Q&A
+                - 'beauty_product': Beauty products (brands, products, ingredients, skincare benefits)
+                - 'beauty_makeup': Makeup consultation (skin types, undertones, finishes,
+                  coverage levels, color theory, application procedures)
+            rich_context: Optional detailed context with node descriptions and edge reasoning
+        """
+        
+        # === Domain: beauty_makeup ===
+        # For makeup consultation knowledge graphs (e.g., makeup_knowledge_graph.graphml)
+        # Covers: skin depth, undertones, skin types, concerns, finishes, coverage,
+        #         formulations, color theory, color correction, application procedures
+        if domain == "beauty_makeup":
+            context_block = rich_context if rich_context else path_str
+            template = f"""You are a professional makeup artist and beauty consultant data synthesis assistant.
+
+Your task is to generate a high-quality question-answer pair based on the following makeup consultation knowledge graph path.
+
+Relationship path:
+{path_str}
+
+Detailed context (node descriptions and reasoning):
+{context_block}
+
+IMPORTANT: Pay close attention to the edge labels:
+- "requires", "prefers", "works_with", "recommends" = POSITIVE recommendations
+- "avoid" = NEGATIVE contraindication (do NOT recommend this combination)
+- "input_to", "determines" = decision flow connections
+- "requires_procedure" = application technique needed
+
+Guidelines:
+1. The question should be natural and from a customer seeking makeup advice
+2. Questions should ask about skin type matches, finish recommendations, what to avoid, application techniques, or color matching
+3. The answer MUST respect the edge direction: if the edge says "avoid", the answer should warn AGAINST that combination
+4. Include the expert REASONING (the "why") in the answer, not just the recommendation
+5. The answer should sound like professional makeup artist advice
+6. Be specific - mention actual skin types, finishes, formulations by name
+
+Generate your response as valid JSON with exactly this format:
+{{
+    "question": "A natural customer question about makeup selection or technique",
+    "answer": "Expert makeup artist advice with reasoning, respecting positive/negative relationships",
+    "difficulty": "easy|medium|hard"
+}}"""
+        
+        # === Domain: beauty_product ===
+        # For beauty product knowledge graphs (e.g., beauty_products.graphml)
+        # Covers: brands, products, ingredients, benefits, skincare routines
+        elif domain == "beauty_product":
+            context_section = ""
+            if rich_context:
+                context_section = f"""\n\nDetailed context (node descriptions and reasoning):\n{rich_context}"""
             template = f"""You are a beauty expert data synthesis assistant specializing in skincare, cosmetics, and beauty products.
 
 Your task is to generate a high-quality question-answer pair based on the following beauty product knowledge graph relationship:
 
-{path_str}
+{path_str}{context_section}
 
 Guidelines:
 1. The question should be natural and from a consumer's perspective
@@ -412,12 +531,17 @@ Generate your response as valid JSON with exactly this format:
     "difficulty": "easy|medium|hard"
 }}"""
         
+        # === Domain: generic (default) ===
+        # For any general-purpose knowledge graph (e.g., technology_knowledge.graphml)
         else:
+            context_section = ""
+            if rich_context:
+                context_section = f"""\n\nDetailed context (node descriptions and reasoning):\n{rich_context}"""
             template = f"""You are a data synthesis assistant helping to generate training data from knowledge graphs.
 
 Your task is to generate a high-quality question-answer pair based on the following relationship path in a knowledge graph:
 
-{path_str}
+{path_str}{context_section}
 
 Guidelines:
 1. The question should be natural and test understanding of the relationship
@@ -457,11 +581,43 @@ class AzureOpenAIClient:
     
     @staticmethod
     def _clean_json_response(text: str) -> str:
-        """Remove markdown code blocks and clean JSON response"""
+        """Remove markdown code blocks and repair common JSON issues.
+        
+        Handles:
+            - Markdown code block wrappers
+            - Unescaped newlines inside JSON string values
+            - Unescaped control characters
+        """
         # Remove markdown code blocks
         text = re.sub(r'^```(?:json)?\s*', '', text, flags=re.MULTILINE)
         text = re.sub(r'```\s*$', '', text, flags=re.MULTILINE)
-        return text.strip()
+        text = text.strip()
+        
+        # Try parsing as-is first (fast path)
+        try:
+            json.loads(text)
+            return text
+        except (json.JSONDecodeError, ValueError):
+            pass
+        
+        # Repair: fix unescaped newlines/tabs inside JSON string values
+        # Strategy: find content between quotes and escape literal newlines
+        def escape_string_content(match):
+            """Escape newlines and tabs inside JSON string values"""
+            content = match.group(1)
+            content = content.replace('\\n', '\x00NEWLINE\x00')  # Preserve already-escaped
+            content = content.replace('\\t', '\x00TAB\x00')
+            content = content.replace('\n', '\\n')
+            content = content.replace('\r', '\\r')
+            content = content.replace('\t', '\\t')
+            content = content.replace('\x00NEWLINE\x00', '\\n')  # Restore
+            content = content.replace('\x00TAB\x00', '\\t')
+            return f'"{content}"'
+        
+        # Match JSON string values (handles escaped quotes inside)
+        text = re.sub(r'"((?:[^"\\]|\\.)*?)"', escape_string_content, text, flags=re.DOTALL)
+        
+        return text
     
     def generate(
         self,
@@ -821,7 +977,8 @@ class KGToTrainingData:
             
             prompt = PromptTemplate.create_prompt_from_path(
                 path_data["path_str"],
-                domain=self.domain
+                domain=self.domain,
+                rich_context=path_data.get("rich_context", "")
             )
             
             response_text = self.llm_client.generate(
@@ -952,7 +1109,7 @@ def main():
         --graph: Path to input GraphML file (default: beauty_products.graphml)
         --output: Output filename prefix (default: output_training)
         --count: Number of examples to generate (default: 10)
-        --domain: Domain template ('generic' or 'beauty', default: generic)
+        --domain: Domain template ('generic', 'beauty_product', or 'beauty_makeup', default: generic)
         --temperature: LLM temperature 0-1 (default: 0.7)
         --quality-threshold: Minimum quality score 0-1 (default: 0.7)
         --max-depth: Maximum path depth (default: 999, paths explore naturally)
@@ -963,8 +1120,11 @@ def main():
         # Generic domain (technology knowledge graph)
         python kg2sft.py --graph technology_knowledge.graphml --count 50
         
-        # Beauty domain (beauty products knowledge graph)
-        python kg2sft.py --graph beauty_products.graphml --count 50 --domain beauty
+        # Beauty product domain (beauty products knowledge graph)
+        python kg2sft.py --graph beauty_products.graphml --count 50 --domain beauty_product
+        
+        # Beauty Makeup domain (makeup consultation knowledge graph)
+        python kg2sft.py --graph makeup_knowledge_graph.graphml --count 50 --domain beauty_makeup
     """
     import argparse
     import sys
@@ -1001,8 +1161,8 @@ def main():
         "--domain",
         type=str,
         default="generic",
-        choices=["generic", "beauty"],
-        help="Domain template (default: generic)"
+        choices=["generic", "beauty_product", "beauty_makeup"],
+        help="Domain template: 'generic' for general-purpose KG, 'beauty_product' for beauty products (brands/ingredients/skincare), 'beauty_makeup' for makeup consultation (skin types/finishes/techniques) (default: generic)"
     )
     parser.add_argument(
         "--temperature",
@@ -1051,17 +1211,26 @@ def main():
         print(f"\n❌ Error: Graph file not found: {graph_path}")
         print(f"   Please use one of the sample files or provide your own GraphML file:")
         print(f"   - technology_knowledge.graphml (generic domain)")
-        print(f"   - beauty_products.graphml (beauty domain)")
+        print(f"   - beauty_products.graphml (beauty_product domain - products, brands, ingredients)")
+        print(f"   - makeup_knowledge_graph.graphml (beauty_makeup domain - skin types, finishes, techniques)")
         print(f"\n   Examples:")
         print(f"   python kg2sft.py --graph technology_knowledge.graphml --count 50")
-        print(f"   python kg2sft.py --graph beauty_products.graphml --count 50 --domain beauty")
+        print(f"   python kg2sft.py --graph beauty_products.graphml --count 50 --domain beauty_product")
+        print(f"   python kg2sft.py --graph makeup_knowledge_graph.graphml --count 50 --domain beauty_makeup")
         return
+    
+    # Map domain names to human-readable descriptions for logging
+    domain_descriptions = {
+        "generic": "generic (general-purpose KG)",
+        "beauty_product": "beauty_product (products, brands, ingredients, skincare)",
+        "beauty_makeup": "beauty_makeup (makeup consultation: skin types, finishes, techniques)"
+    }
     
     print(f"\n🔧 Initializing kg2sft...")
     print(f"   Graph: {graph_path}")
     print(f"   Output: {args.output}")
     print(f"   Count: {args.count}")
-    print(f"   Domain: {args.domain}")
+    print(f"   Domain: {domain_descriptions.get(args.domain, args.domain)}")
     
     trainer = KGToTrainingData(
         graph_path=graph_path,

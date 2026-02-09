@@ -38,7 +38,7 @@ kg2sft automatically converts Knowledge Graphs (GraphML format) into supervised 
 - 💰 **Cost Tracking**: Real-time token usage and cost calculation
 - 🔁 **Retry Logic**: Exponential backoff for rate limits, automatic error recovery
 - 📊 **Progress Tracking**: tqdm integration with periodic checkpointing
-- 🎯 **Domain-Specific**: Built-in templates for beauty/skincare and generic domains
+- 🎯 **Domain-Specific**: Built-in templates for beauty products, makeup consultation, and generic domains
 - 🔍 **Path Deduplication**: Jaccard similarity-based filtering for diverse training data
 - 📈 **Comprehensive Reporting**: Detailed cost, quality, and graph statistics
 - 🖥️ **Web UI (Optional)**: Streamlit-based UI with interactive graph visualization
@@ -95,8 +95,11 @@ python kg2sft.py --help
 # Run with technology knowledge graph sample (generic domain)
 python kg2sft.py --graph technology_knowledge.graphml --count 50
 
-# Run with beauty products graph sample (beauty domain)
-python kg2sft.py --graph beauty_products.graphml --count 50 --domain beauty
+# Run with beauty products graph sample (beauty_product domain - products, brands, ingredients)
+python kg2sft.py --graph beauty_products.graphml --count 50 --domain beauty_product
+
+# Run with makeup consultation graph sample (beauty_makeup domain - skin types, finishes, techniques)
+python kg2sft.py --graph makeup_knowledge_graph.graphml --count 50 --domain beauty_makeup
 
 # Generate 100 examples from your own graph
 python kg2sft.py --graph my_graph.graphml --count 100
@@ -193,7 +196,7 @@ python kg2sft.py [OPTIONS]
 | `--graph` | str | - | ✅ | Path to input GraphML file |
 | `--output` | str | `output_training` | ❌ | Output filename prefix |
 | `--count` | int | `10` | ❌ | Number of training examples to generate |
-| `--domain` | str | `generic` | ❌ | Domain template (`generic`, `beauty`) |
+| `--domain` | str | `generic` | ❌ | Domain template (`generic`, `beauty_product`, `beauty_makeup`) |
 | `--temperature` | float | `0.7` | ❌ | LLM sampling temperature (0.0-1.0) |
 | `--quality-threshold` | float | `0.7` | ❌ | Minimum quality score to accept (0.0-1.0) |
 | `--max-depth` | int | `999` | ❌ | Maximum path length (999 = explore naturally until no unvisited neighbors) |
@@ -207,9 +210,14 @@ python kg2sft.py [OPTIONS]
 python kg2sft.py --graph technology_knowledge.graphml --count 50
 ```
 
-**Beauty products graph (beauty domain):**
+**Beauty products graph (beauty_product domain - products, brands, ingredients):**
 ```bash
-python kg2sft.py --graph beauty_products.graphml --count 50 --domain beauty
+python kg2sft.py --graph beauty_products.graphml --count 50 --domain beauty_product
+```
+
+**Makeup consultation graph (beauty_makeup domain - skin types, finishes, techniques):**
+```bash
+python kg2sft.py --graph makeup_knowledge_graph.graphml --count 50 --domain beauty_makeup
 ```
 
 **Production use with custom settings:**
@@ -218,7 +226,7 @@ python kg2sft.py \
   --graph knowledge_graph.graphml \
   --output training_data \
   --count 1000 \
-  --domain beauty \
+  --domain beauty_product \
   --temperature 0.8 \
   --quality-threshold 0.7 \
   --dedup-threshold 0.90
@@ -398,7 +406,7 @@ A sophisticated technology knowledge graph with:
   - `Rust → HAS_FEATURE → Memory Safety`
 - **Use case**: General-purpose knowledge representation, technology documentation, educational content
 
-### 2. **beauty_products.graphml** (Beauty Domain)
+### 2. **beauty_products.graphml** (Beauty Product Domain)
 A comprehensive beauty products knowledge graph with:
 - **48 nodes**: 5 brands, 20 products, 15 ingredients, 13 benefits
 - **Complex relationships**: Brand→Product, Product→Ingredient, Ingredient→Benefit, Ingredient↔Ingredient (synergies)
@@ -406,7 +414,19 @@ A comprehensive beauty products knowledge graph with:
   - `SK-II → Facial Treatment Essence → Pitera → Radiance Boost`
   - `La Mer → Crème de la Mer → Miracle Broth → Anti-Aging`
   - `Vitamin C → SYNERGIZES_WITH → Ferulic Acid → Antioxidant Protection`
+- **Domain switch**: `--domain beauty_product`
 - **Use case**: E-commerce product Q&A, beauty chatbots, skincare recommendation systems
+
+### 3. **makeup_knowledge_graph.graphml** (Makeup Consultation Domain)
+A multi-tiered makeup consultation knowledge graph with:
+- **50+ nodes** across 5 tiers: Customer Characteristics, Makeup Attributes, Color Theory, Decision Logic, Application Procedures
+- **Customer characteristics**: 7 skin depths, 4 undertones, 5 skin types, 8 skin concerns
+- **Makeup attributes**: 6 finishes, 4 coverage levels, 5 formulations
+- **Color theory**: 3 color palettes, 5 color correction types
+- **Decision logic**: Expert reasoning nodes (e.g., "Oily → Matte", "Dry → Dewy")
+- **Application procedures**: Foundation matching, concealer techniques, primer, setting
+- **Domain switch**: `--domain beauty_makeup`
+- **Use case**: Virtual makeup artist chatbots, beauty counter advisor training, personalized cosmetics recommendations
 
 Both samples demonstrate sophisticated multi-hop paths suitable for generating diverse, high-quality training data.
 
@@ -439,12 +459,44 @@ kg2sft accepts knowledge graphs in GraphML format (XML-based). Here's the expect
 </graphml>
 ```
 
-### Required Node Attributes
-- `name` or `label`: Human-readable label (used in prompts)
-- Additional attributes optional
+### Node Attributes
 
-### Required Edge Attributes
-- `relationship` or `rel`: Relationship type (e.g., CONTAINS, PROVIDES)
+kg2sft automatically detects human-readable labels by checking these attribute names in priority order:
+
+| Priority | Attribute Name | Example |
+|----------|---------------|----------|
+| 1 | `name` | `<data key="name">Python</data>` |
+| 2 | `label` | `<data key="label">Skin Type: Oily</data>` |
+| 3 | `title` | `<data key="title">Photosynthesis</data>` |
+| 4 | `display_name` | `<data key="display_name">My Node</data>` |
+| 5 | `text` | `<data key="text">Some text</data>` |
+| 6 | `value` | `<data key="value">Some value</data>` |
+| 7 | First string attr | Any non-system string attribute |
+| 8 | Node ID | Falls back to raw node ID (e.g., `n1`) |
+
+- **No attributes required** — graphs with no node attributes still work (node IDs are used as labels)
+- Optional: `description` or `desc` provides rich context for prompt generation
+
+### Edge Attributes
+
+kg2sft automatically detects relationship types by checking these attribute names in priority order:
+
+| Priority | Attribute Name | Example |
+|----------|---------------|----------|
+| 1 | `label` | `<data key="label">requires</data>` |
+| 2 | `relationship_type` | `<data key="relationship_type">decision</data>` |
+| 3 | `relationship` | `<data key="relationship">CONTAINS</data>` |
+| 4 | `rel` | `<data key="rel">PROVIDES</data>` |
+| 5 | `type` | `<data key="type">causal</data>` |
+| 6 | `edge_type` | `<data key="edge_type">depends_on</data>` |
+| 7 | `connection_type` | `<data key="connection_type">uses</data>` |
+| 8 | `relation` | `<data key="relation">part_of</data>` |
+| 9 | `predicate` | `<data key="predicate">enables</data>` |
+| 10 | First string attr | Any non-system string attribute |
+| 11 | `RELATED_TO` | Generic fallback |
+
+- **No attributes required** — edges with no attributes default to `RELATED_TO`
+- Optional: `reasoning` provides expert rationale for prompt generation
 
 ## 📤 Output Format
 
@@ -505,7 +557,8 @@ Understanding the internal pipeline helps optimize your training data generation
          ▼
 ┌─────────────────┐
 │  Generate       │  PromptTemplate: Domain-specific prompts
-│  Prompts        │  - Beauty domain
+│  Prompts        │  - Beauty product domain (brands, ingredients)
+│                 │  - Beauty makeup domain (skin types, finishes)
 │                 │  - Generic domain
 └────────┬────────┘
          │
@@ -544,6 +597,7 @@ Understanding the internal pipeline helps optimize your training data generation
 - Unified NetworkX DiGraph wrapper
 - Dual storage: NetworkX graph + attribute dicts
 - Efficient neighbor queries with BFS
+- **Flexible attribute resolution**: Auto-detects node labels and edge relationships from common attribute names (`name`, `label`, `title`, `relationship`, `connection_type`, etc.) with cascading fallback — works with any user-provided GraphML without requiring specific attribute naming
 
 #### 2. **Path Extraction** (`PathExtractor`)
 - **Sampling Strategies (with replacement):**
@@ -557,6 +611,7 @@ Understanding the internal pipeline helps optimize your training data generation
 
 #### 3. **Prompt Generation** (`PromptTemplate`)
 - Domain-specific templates
+- **Rich context support**: All domains (`generic`, `beauty_product`, `beauty_makeup`) include node descriptions and edge reasoning in prompts when available
 - JSON output format specification
 - Grounding instructions (path-based answers only)
 
@@ -832,7 +887,7 @@ python kg2sft.py \
   --graph beauty_products.graphml \
   --output beauty_training \
   --count 500 \
-  --domain beauty \
+  --domain beauty_product \
   --temperature 0.75 \
   --quality-threshold 0.80
 ```
@@ -854,7 +909,36 @@ python kg2sft.py \
 }
 ```
 
-### Example 2: Generic Knowledge Graph
+### Example 2: Makeup Consultation Knowledge Graph
+
+```bash
+python kg2sft.py \
+  --graph makeup_knowledge_graph.graphml \
+  --output makeup_training \
+  --count 200 \
+  --domain beauty_makeup \
+  --temperature 0.7 \
+  --quality-threshold 0.75
+```
+
+**Sample Output:**
+```json
+{
+  "messages": [
+    {
+      "role": "user",
+      "content": "I have oily skin and I'm looking for a foundation. What finish should I go for?"
+    },
+    {
+      "role": "assistant",
+      "content": "For oily skin, I'd recommend a matte finish foundation. Matte formulas contain larger particles that absorb light rather than reflecting it, which helps control shine and keeps your face looking fresh throughout the day. Pair it with a powder formulation for maximum oil control."
+    }
+  ],
+  "quality_score": 0.95
+}
+```
+
+### Example 3: Generic Knowledge Graph
 
 ```bash
 python kg2sft.py \
@@ -923,13 +1007,20 @@ elif domain == "medical":
 Generate a medically accurate Q&A pair..."""
 ```
 
+Available built-in domains:
+- `generic` — General-purpose knowledge graph Q&A
+- `beauty_product` — Beauty products (brands, products, ingredients, skincare benefits)
+- `beauty_makeup` — Makeup consultation (skin types, undertones, finishes, coverage, color theory, application techniques)
+
 ## 📦 Project Structure
 
 ```
 kg2sft/
-├── kg2sft.py                     # Main application (1110 lines)
+├── kg2sft.py                     # Main CLI application
+├── kg2sftui.py                   # Streamlit web UI frontend
 ├── technology_knowledge.graphml  # Sample: Generic domain
-├── beauty_products.graphml       # Sample: Beauty domain
+├── beauty_products.graphml       # Sample: Beauty product domain (--domain beauty_product)
+├── makeup_knowledge_graph.graphml # Sample: Makeup consultation domain (--domain beauty_makeup)
 ├── .env                          # Configuration (create this, not in repo)
 ├── .gitignore                    # Git ignore rules
 ├── README.md                     # This documentation

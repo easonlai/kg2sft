@@ -20,6 +20,12 @@ Features:
     - Quality metrics and cost reporting
     - Download generated training data in JSONL/JSON formats
 
+Domain Templates:
+    - generic:        General-purpose knowledge graph Q&A generation
+    - beauty_product: Beauty products domain (brands, products, ingredients, skincare)
+    - beauty_makeup:  Makeup consultation domain (skin types, undertones, finishes,
+                     coverage, color theory, application techniques)
+
 Usage:
     streamlit run kg2sftui.py
 
@@ -145,7 +151,7 @@ if 'azure_api_version' not in st.session_state:
 if 'count' not in st.session_state:
     st.session_state.count = 10                      # Number of examples to generate
 if 'domain' not in st.session_state:
-    st.session_state.domain = "generic"              # Domain template (generic/beauty)
+    st.session_state.domain = "generic"              # Domain template (generic/beauty/beauty_makeup)
 if 'temperature' not in st.session_state:
     st.session_state.temperature = 0.7               # LLM sampling temperature
 if 'quality_threshold' not in st.session_state:
@@ -311,9 +317,10 @@ def create_pyvis_network_internal(graph: Graph, height: str = "600px") -> Networ
         title = f"<b>{label}</b><br>"
         title += f"ID: {node_id}<br>"
         title += f"Connections: {degree}<br>"
-        # Add any additional attributes (excluding label/name already shown)
+        # Add any additional attributes (excluding keys used for label resolution)
+        label_keys = {'name', 'label', 'title', 'display_name', 'text', 'value'}
         for key, value in attrs.items():
-            if key not in ['label', 'name']:
+            if key not in label_keys:
                 title += f"{key}: {value}<br>"
         
         net.add_node(
@@ -334,8 +341,11 @@ def create_pyvis_network_internal(graph: Graph, height: str = "600px") -> Networ
         
         # Build HTML tooltip for edge
         title = f"<b>{relationship}</b><br>"
+        # Exclude keys used for relationship resolution to avoid redundancy
+        rel_keys = {'label', 'relationship_type', 'relationship', 'rel',
+                    'type', 'edge_type', 'connection_type', 'relation', 'predicate'}
         for key, value in edge_attrs.items():
-            if key not in ['relationship', 'rel']:
+            if key not in rel_keys:
                 title += f"{key}: {value}<br>"
         
         net.add_edge(
@@ -537,12 +547,12 @@ def main() -> None:
             help="Number of training examples to generate"
         )
         
-        domain_options = ["generic", "beauty"]
+        domain_options = ["generic", "beauty_product", "beauty_makeup"]
         st.session_state.domain = st.selectbox(
             "Domain",
             options=domain_options,
             index=domain_options.index(st.session_state.domain),
-            help="Domain template for prompt generation"
+            help="Domain template: 'generic' for general-purpose KG, 'beauty_product' for beauty products (brands/ingredients/skincare), 'beauty_makeup' for makeup consultation (skin types/finishes/techniques)"
         )
         
         st.session_state.temperature = st.slider(
@@ -620,11 +630,11 @@ def main() -> None:
         
         # Quick-load buttons for sample files
         st.caption("Or use a sample file:")
-        sample_col1, sample_col2 = st.columns(2)
+        sample_col1, sample_col2, sample_col3 = st.columns(3)
         
         with sample_col1:
-            # Load technology knowledge graph sample
-            if st.button("📱 Technology Graph", use_container_width=True):
+            # Load technology knowledge graph sample (generic domain)
+            if st.button("Technology Graph", use_container_width=True):
                 if os.path.exists("technology_knowledge.graphml"):
                     st.session_state.graph = GraphMLLoader.load("technology_knowledge.graphml")
                     st.session_state.graph_file_name = "technology_knowledge.graphml"
@@ -634,11 +644,22 @@ def main() -> None:
                     st.error("Sample file not found")
         
         with sample_col2:
-            # Load beauty products knowledge graph sample
-            if st.button("💄 Beauty Graph", use_container_width=True):
+            # Load beauty products knowledge graph sample (beauty_product domain)
+            if st.button("Beauty Products", use_container_width=True):
                 if os.path.exists("beauty_products.graphml"):
                     st.session_state.graph = GraphMLLoader.load("beauty_products.graphml")
                     st.session_state.graph_file_name = "beauty_products.graphml"
+                    st.session_state.generation_complete = False
+                    st.rerun()  # Refresh to show the loaded graph
+                else:
+                    st.error("Sample file not found")
+        
+        with sample_col3:
+            # Load makeup consultation knowledge graph sample (beauty_makeup domain)
+            if st.button("Beauty Makeup", use_container_width=True):
+                if os.path.exists("makeup_knowledge_graph.graphml"):
+                    st.session_state.graph = GraphMLLoader.load("makeup_knowledge_graph.graphml")
+                    st.session_state.graph_file_name = "makeup_knowledge_graph.graphml"
                     st.session_state.generation_complete = False
                     st.rerun()  # Refresh to show the loaded graph
                 else:
@@ -730,8 +751,15 @@ def main() -> None:
             gen_col1, gen_col2 = st.columns([3, 1])
             
             with gen_col1:
+                # Map domain names to human-readable descriptions (aligned with CLI)
+                domain_descriptions = {
+                    "generic": "generic (general-purpose KG)",
+                    "beauty_product": "beauty_product (products, brands, ingredients, skincare)",
+                    "beauty_makeup": "beauty_makeup (makeup consultation: skin types, finishes, techniques)"
+                }
+                domain_display = domain_descriptions.get(st.session_state.domain, st.session_state.domain)
                 # Show summary of generation settings
-                st.info(f"Ready to generate **{st.session_state.count}** training examples from **{st.session_state.graph_file_name}** using **{st.session_state.domain}** domain template.")
+                st.info(f"Ready to generate **{st.session_state.count}** training examples from **{st.session_state.graph_file_name}** using **{domain_display}** domain template.")
             
             with gen_col2:
                 # Primary action button to start generation
