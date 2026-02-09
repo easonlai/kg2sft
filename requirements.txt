@@ -8,3 +8,7 @@ openai>=1.0.0          # Azure OpenAI SDK for LLM integration
 
 # Optional dependencies
 tqdm>=4.65.0           # Progress bar (optional but recommended)
+
+# UI dependencies (for kg2sftui.py)
+streamlit>=1.32.0      # Web UI framework
+pyvis>=0.3.2           # Interactive network visualization

@@ -15,6 +15,7 @@ kg2sft automatically converts Knowledge Graphs (GraphML format) into supervised 
 
 - [Key Features](#key-features)
 - [Quick Start](#-quick-start)
+- [Web UI (Streamlit)](#-web-ui-streamlit)
 - [Detailed Usage](#-detailed-usage)
 - [Understanding Output: Why Fewer Examples](#%EF%B8%8F-understanding-output-why-you-may-get-fewer-examples-than-requested)
 - [Sample Knowledge Graphs](#-sample-knowledge-graphs)
@@ -39,6 +40,7 @@ kg2sft automatically converts Knowledge Graphs (GraphML format) into supervised 
 - 🎯 **Domain-Specific**: Built-in templates for beauty/skincare and generic domains
 - 🔍 **Path Deduplication**: Jaccard similarity-based filtering for diverse training data
 - 📈 **Comprehensive Reporting**: Detailed cost, quality, and graph statistics
+- 🖥️ **Web UI (Optional)**: Streamlit-based UI with interactive graph visualization
 
 ## 🚀 Quick Start
 
@@ -62,14 +64,11 @@ source venv/bin/activate  # On Windows: venv\Scripts\activate
 # Install dependencies
 pip install networkx python-dotenv openai tqdm
 
-# Or create requirements.txt
-cat > requirements.txt << EOF
-networkx>=3.0
-python-dotenv>=1.0.0
-openai>=1.0.0
-tqdm>=4.65.0
-EOF
+# Or install from requirements.txt
 pip install -r requirements.txt
+
+# Optional: Install UI dependencies for Streamlit web interface
+pip install streamlit pyvis
 ```
 
 ### Configuration
@@ -112,6 +111,61 @@ After successful execution, kg2sft creates:
   - Graph statistics (nodes, edges, paths)
 
 **Expected results:** When requesting 50 examples, you typically get 20-40 high-quality pairs (40-60% acceptance rate) depending on your graph structure and quality threshold.
+
+---
+
+## 🖥️ Web UI (Streamlit)
+
+For users who prefer a graphical interface, kg2sft provides an optional **Streamlit-based web UI** (`kg2sftui.py`) with interactive graph visualization.
+
+### UI Features
+
+- 📁 **Drag-and-drop file upload** for GraphML files
+- 🔗 **Interactive graph network visualization** using PyVis
+  - Hover over nodes/edges for details
+  - Pan, zoom, and navigate the graph
+  - Color-coded nodes with size based on connection degree
+- ⚙️ **All settings configurable in sidebar**
+  - Azure OpenAI credentials (API key, endpoint, deployment)
+  - Generation parameters (count, domain, temperature)
+  - Advanced settings (quality threshold, dedup threshold, sampling strategy)
+- 📊 **Real-time results display**
+  - Generation metrics and quality scores
+  - Cost breakdown
+  - Preview of generated Q&A pairs
+- 📥 **One-click download** of JSONL and JSON output files
+
+### Running the Web UI
+
+```bash
+# Install UI dependencies (if not already installed)
+pip install streamlit pyvis
+
+# Launch the web interface
+streamlit run kg2sftui.py
+```
+
+This will open a browser window (typically at `http://localhost:8501`) with the kg2sft web interface.
+
+### UI Screenshots & Workflow
+
+1. **Configure Azure OpenAI** in the sidebar (expand "🔑 Azure OpenAI Settings")
+2. **Upload a GraphML file** or use the sample file buttons
+3. **View the interactive graph** visualization
+4. **Adjust generation settings** as needed
+5. **Click "🎯 Generate"** to start the process
+6. **Review results** and download the training data
+
+### When to Use UI vs CLI
+
+| Use Case | Recommended |
+|----------|-------------|
+| Quick exploration of a new knowledge graph | 🖥️ **Web UI** |
+| Visual inspection of graph structure | 🖥️ **Web UI** |
+| One-time generation with manual review | 🖥️ **Web UI** |
+| Automated pipelines or scripts | ⌨️ **CLI (`kg2sft.py`)** |
+| Batch processing multiple graphs | ⌨️ **CLI (`kg2sft.py`)** |
+| CI/CD integration | ⌨️ **CLI (`kg2sft.py`)** |
 
 ---
 
