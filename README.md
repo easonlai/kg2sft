@@ -30,6 +30,8 @@ kg2sft automatically converts Knowledge Graphs (GraphML format) into supervised 
 - [Troubleshooting](#-troubleshooting)
 - [Examples](#-examples)
 - [Advanced Usage](#%EF%B8%8F-advanced-usage)
+- [Sample: Makeup Knowledge Graph Training Data](#-sample-makeup-knowledge-graph-training-data)
+- [Sample: Model Evaluation Dataset](#-sample-model-evaluation-dataset)
 
 ### Key Features
 
@@ -1243,6 +1245,168 @@ MIT License - see LICENSE file for details
 
 - **Issues:** [GitHub Issues](https://github.com/easonlai/kg2sft/issues)
 - **Discussions:** [GitHub Discussions](https://github.com/easonlai/kg2sft/discussions)
+
+## 📦 Sample: Makeup Knowledge Graph Training Data
+
+A sample SFT training dataset is provided in the `sft_training_data/` folder, generated from the included `makeup_knowledge_graph.graphml` knowledge graph.
+
+### Generation Command
+
+```bash
+python kg2sft.py --graph makeup_knowledge_graph.graphml --count 500 --domain beauty_makeup --auto
+```
+
+### Result
+
+- **Requested:** 500 training examples
+- **Generated:** 434 training examples (after quality validation filtering)
+- **Format:** JSONL (one JSON object per line) + JSON (array with quality scores)
+- **Files:**
+  - `sft_training_data/makeup_knowledge_09022026.jsonl` — Azure OpenAI fine-tuning format
+  - `sft_training_data/makeup_knowledge_09022026.json` — Full format with quality scores
+
+Each training example follows the chat completion format:
+
+```json
+{
+  "messages": [
+    {"role": "user", "content": "I have oily skin...what foundation finish...?"},
+    {"role": "assistant", "content": "For oily skin, I recommend a matte finish..."}
+  ]
+}
+```
+
+### Topics Covered
+
+The 434 examples span the full makeup consultation domain encoded in the knowledge graph, including:
+
+- **Foundation finishes** — matte, satin, dewy, luminous (particle sizes, light interaction)
+- **Coverage levels** — sheer (20-40% opacity), medium (buildable), full (90-100% opacity)
+- **Color correction** — peach/yellow/lavender/green/orange correctors mapped to Fitzpatrick skin types
+- **Application techniques** — circular motion, blending direction, apples of cheeks placement
+- **Shade matching** — structured 5-step process (depth, undertone, selection, patch test, validation)
+- **Formulation suitability** — which formulations suit oily, dry, acne-prone, sensitive, and aging skin
+- **Setting procedures** — setting spray/powder for wear time extension and sebum control
+
+### Fine-Tuning Target
+
+This dataset was used to fine-tune **gpt-4.1-nano** on Azure OpenAI, producing a domain-specialized model for beauty makeup consultation.
+
+---
+
+## 📊 Sample: Model Evaluation Dataset
+
+A model evaluation dataset is provided in the `model_evaluation/` folder, designed to compare the **base gpt-4.1-nano** model against the **fine-tuned** model using [Microsoft Foundry](https://ai.azure.com) evaluations.
+
+### File
+
+- `model_evaluation/makeup_knowledge_evaluation.jsonl` — 56 evaluation rows
+
+### Dataset Schema
+
+Each row in the JSONL file contains:
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `query` | string | Test question for the model to answer |
+| `ground_truth` | string | Reference answer containing KG-specific terminology |
+| `category` | string | Topic classification (39 categories) |
+| `kg_keywords` | string | Comma-separated knowledge-graph-specific terms for scoring |
+
+### Evaluation Data Generation Logic
+
+The evaluation dataset was generated through a structured, multi-step process:
+
+**Step 1 — Training Data Analysis**
+
+The 434 training examples in `output_training_v2.jsonl` were analyzed to extract unique terminology and knowledge patterns that exist exclusively in the knowledge graph — terms a base model would not produce on its own. Key patterns identified include:
+
+- Domain-specific vocabulary: *"micro-reflective particles"*, *"occlusive"*, *"sebum"*, *"second-skin effect"*
+- Precise numerical values: *"20-40% opacity"* (sheer), *"90-100% opacity"* (full coverage)
+- Structured procedures: *"5-step shade matching process"*, *"circular motion application"*
+- Specific mappings: Fitzpatrick skin type → color corrector (e.g., Type V-VI → orange corrector)
+- Technical mechanisms: particle size → light behavior (large particles absorb, micro-reflective scatter)
+
+**Step 2 — Test Query Design (56 queries across 39 categories)**
+
+Test queries were designed to probe the knowledge graph content without directly copying training data questions. The queries fall into two tiers:
+
+- **General domain queries (41 queries)** — Cover standard makeup consultation topics (foundation for oily skin, blush for warm undertones, etc.). Both base and fine-tuned models should handle these, but the fine-tuned model should use KG-specific terminology.
+- **Fine-tuning-specific queries (15 queries, prefixed `ft_`)** — Target deep KG knowledge that only the fine-tuned model would produce (particle science, exact opacity numbers, occlusive mechanisms, Fitzpatrick-to-corrector mappings, etc.).
+
+**Step 3 — Ground Truth Reference Answers**
+
+For each of the 56 queries, a detailed ground truth reference answer was hand-crafted using the exact terminology and knowledge patterns from the training data. These ground truths are intentionally saturated with KG-specific vocabulary so that:
+
+- **Similarity evaluators** (Similarity, Relevance, Response Completeness) score higher when the model's response contains the same domain terms
+- **The fine-tuned model** produces these terms naturally (learned from training data) → **higher scores**
+- **The base model** gives correct but generic answers lacking this vocabulary → **lower scores**
+
+**Step 4 — KG Keywords Field**
+
+Each row includes a `kg_keywords` field listing the specific knowledge-graph terms expected in the response (e.g., `"large particles,absorb light,sebum"`). This enables custom keyword-based scoring to precisely quantify how much KG terminology the model absorbed.
+
+### Category Distribution
+
+| Category Group | Count | Examples |
+|---------------|-------|----------|
+| Foundation (skin type, aging, coverage) | 14 | skin_type_foundation (5), aging_foundation (2), coverage_knowledge (1) |
+| Color correction & concealer | 4 | color_correction (3), concealer (1) |
+| Blush (undertone, aging) | 4 | blush_undertone (2), blush_aging (2) |
+| Shade matching | 2 | shade_matching (2) |
+| Setting & finishing | 2 | setting_finishing (2) |
+| Formulation suitability | 4 | formulation_suitability (3), formulation_type (1) |
+| Application techniques | 2 | technique_application (2) |
+| Multi-concern complex | 4 | multi_concern_complex (4) |
+| Fine-tuning-specific (ft_) | 15 | ft_particle_science, ft_opacity_numbers, ft_fitzpatrick_corrector_mapping, etc. |
+| Reasoning & edge cases | 5 | reasoning (1), reasoning_novel (1), knowledge_depth (1), out_of_scope (2) |
+
+### Usage with Microsoft Foundry
+
+1. Go to [Azure AI Foundry](https://ai.azure.com) → your project → **Evaluations**
+2. Create a new evaluation and upload `makeup_knowledge_evaluation.jsonl`
+3. Map fields: `query` → input, `ground_truth` → reference
+4. Add two model deployments: base **gpt-4.1-nano** and the **fine-tuned model**
+5. **Configure each model** — Click **Configure** on each model deployment and set:
+
+   | Setting | Value | Reason |
+   |---------|-------|--------|
+   | **Max Completion Tokens** | `800` | Sufficient for detailed makeup consultation answers |
+   | **Temperature** | `0.3` | Low temperature for deterministic, consistent responses for fair comparison |
+   | **Top P** | `1` | Default (no nucleus sampling restriction) |
+
+   Then set the **Prompt** messages:
+
+   - **DEVELOPER** (system prompt):
+     ```
+     You are a professional beauty makeup consultant. Provide detailed, expert advice about foundation, concealer, blush, color correction, shade matching, and application techniques. Be specific about formulation types, finish properties, coverage levels, and step-by-step procedures.
+     ```
+   - Click **+ Message** → **USER**:
+     ```
+     {{query}}
+     ```
+     This maps the `query` field from the evaluation dataset to the model input.
+
+   - Click **Save**, then repeat the same configuration for the other model.
+
+6. Select evaluators: **Coherence**, **Relevance**, **Similarity**, **Response Completeness**, **Fluency**, **IntentResolution**
+7. Run the evaluation and compare results side by side
+
+> **Note:** Use the same system prompt and parameters for both models to ensure a fair comparison. Any difference in evaluation scores comes purely from the fine-tuning.
+
+### Expected Results
+
+The fine-tuned model should significantly outperform the base model on:
+
+- **Relevance** — Addresses domain-specific intent accurately
+- **IntentResolution** — Understands makeup consultation queries better
+- **Coherence** — Produces structured, domain-appropriate responses
+- **Similarity & Response Completeness** — Matches KG-specific ground truth terminology
+
+While both models should score similarly on:
+
+- **Fluency** — Both produce grammatically correct text
+- **Safety metrics** — No safety regressions from fine-tuning
 
 ---
 
