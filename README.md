@@ -138,6 +138,8 @@ For users who prefer a graphical interface, kg2sft provides an optional **Stream
 
 You can use kg2sft directly in your browser without any local installation. Simply visit the link above, configure your Azure OpenAI credentials, upload your GraphML file, and start generating training data.
 
+![Demo GIF](images/demo1.gif)
+
 ### UI Features
 
 - 📁 **Drag-and-drop file upload** for GraphML files
