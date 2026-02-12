@@ -1184,18 +1184,6 @@ kg2sft/
 └── checkpoint_training.jsonl     # Temporary checkpoint (auto-deleted)
 ```
 
-## 📊 Performance Optimization
-
-### Speed Improvements
-1. **Parallel Processing:** Future enhancement for batch API
-2. **Caching:** Reuse extracted paths across runs
-3. **Streaming:** Process large graphs in chunks
-
-### Quality Improvements
-1. **Lower rejection rate:** Adjust `quality_threshold`
-2. **Better path diversity:** Tune `dedup_threshold`
-3. **Domain tuning:** Create custom prompt templates
-
 ## 📦 Sample: Makeup Knowledge Graph Training Data
 
 A sample SFT training dataset is provided in the `sft_training_data/` folder, generated from the included `makeup_knowledge_graph.graphml` knowledge graph.
