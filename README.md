@@ -1184,31 +1184,6 @@ kg2sft/
 └── checkpoint_training.jsonl     # Temporary checkpoint (auto-deleted)
 ```
 
-## 🔄 Workflow Integration
-
-### Use Generated Data for Fine-Tuning
-
-**OpenAI/Azure OpenAI:**
-```bash
-# Upload training file
-az openai fineTune create \
-  --training-file output_training.jsonl \
-  --model gpt-4.1-mini
-
-# Or use OpenAI CLI
-openai fine_tunes.create \
-  --training_file output_training.jsonl \
-  --model gpt-4.1-mini
-```
-
-**Hugging Face:**
-```python
-from datasets import load_dataset
-
-dataset = load_dataset("json", data_files="output_training.jsonl")
-# Continue with Transformers Trainer...
-```
-
 ## 📊 Performance Optimization
 
 ### Speed Improvements
@@ -1220,33 +1195,6 @@ dataset = load_dataset("json", data_files="output_training.jsonl")
 1. **Lower rejection rate:** Adjust `quality_threshold`
 2. **Better path diversity:** Tune `dedup_threshold`
 3. **Domain tuning:** Create custom prompt templates
-
-## 🤝 Contributing
-
-Contributions are welcome! Areas for improvement:
-
-- [ ] Additional domain templates (medical, legal, scientific)
-- [ ] Support for more graph formats (Neo4j, RDF, etc.)
-- [ ] Batch API integration
-- [ ] Resume from checkpoint functionality
-- [ ] Web UI for configuration
-- [ ] Multi-language support
-- [ ] Unit tests and CI/CD
-
-## 📝 License
-
-MIT License - see LICENSE file for details
-
-## 🙏 Acknowledgments
-
-- Built with [NetworkX](https://networkx.org/) for graph operations
-- Powered by [Azure OpenAI](https://azure.microsoft.com/en-us/products/ai-services/openai-service)
-- Inspired by the need for high-quality SLM training data
-
-## 📮 Contact & Support
-
-- **Issues:** [GitHub Issues](https://github.com/easonlai/kg2sft/issues)
-- **Discussions:** [GitHub Discussions](https://github.com/easonlai/kg2sft/discussions)
 
 ## 📦 Sample: Makeup Knowledge Graph Training Data
 
@@ -1409,6 +1357,33 @@ While both models should score similarly on:
 
 - **Fluency** — Both produce grammatically correct text
 - **Safety metrics** — No safety regressions from fine-tuning
+
+## 🤝 Contributing
+
+Contributions are welcome! Areas for improvement:
+
+- [ ] Additional domain templates (medical, legal, scientific)
+- [ ] Support for more graph formats (Neo4j, RDF, etc.)
+- [ ] Batch API integration
+- [ ] Resume from checkpoint functionality
+- [ ] Web UI for configuration
+- [ ] Multi-language support
+- [ ] Unit tests and CI/CD
+
+## 📝 License
+
+MIT License - see LICENSE file for details
+
+## 🙏 Acknowledgments
+
+- Built with [NetworkX](https://networkx.org/) for graph operations
+- Powered by [Azure OpenAI](https://azure.microsoft.com/en-us/products/ai-services/openai-service)
+- Inspired by the need for high-quality SLM training data
+
+## 📮 Contact & Support
+
+- **Issues:** [GitHub Issues](https://github.com/easonlai/kg2sft/issues)
+- **Discussions:** [GitHub Discussions](https://github.com/easonlai/kg2sft/discussions)
 
 ---
 
