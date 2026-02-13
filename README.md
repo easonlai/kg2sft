@@ -4,7 +4,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://kg2sft.streamlit.app/)
 
-> **Transform your Knowledge Graphs into high-quality training data for fine-tuning Small Language Models (SLMs) using LLM synthesis via Azure OpenAI.**
+> **Transform your Knowledge Graphs into high-quality training data for fine-tuning Small Language Models (SLMs) using LLM synthesis via Microsoft Foundry.**
 
 ## 🎯 Overview
 
@@ -36,7 +36,7 @@ kg2sft automatically converts Knowledge Graphs (GraphML format) into supervised 
 ### Key Features
 
 - 🔄 **Multi-hop Path Extraction**: Intelligent sampling strategies (frequency-weighted, random)
-- 🤖 **LLM-Powered Synthesis**: Generates natural Q&A pairs using Azure OpenAI GPT-4.1-mini
+- 🤖 **LLM-Powered Synthesis**: Generates natural Q&A pairs using Azure OpenAI in Foundry Models, GPT-4.1-mini
 - ✅ **Quality Validation**: Multi-criteria scoring system (0-1 scale) with configurable thresholds
 - 💰 **Cost Tracking**: Real-time token usage and cost calculation
 - 🔁 **Retry Logic**: Exponential backoff for rate limits, automatic error recovery
@@ -55,7 +55,7 @@ kg2sft automatically converts Knowledge Graphs (GraphML format) into supervised 
 ### Prerequisites
 
 - Python 3.8 or higher
-- Azure OpenAI API access with GPT-4.1-mini deployment
+- Microsoft Foundry (aka Azure OpenAI) API access with GPT-4.1-mini deployment
 - GraphML knowledge graph file
 
 ### Installation
@@ -116,7 +116,7 @@ python kg2sft.py --graph my_graph.graphml --count 100
 
 After successful execution, kg2sft creates:
 
-- **`output_training.jsonl`** - OpenAI-compatible fine-tuning format (ready to use)
+- **`output_training.jsonl`** - SLM/LLM-compatible fine-tuning format (ready to use)
 - **`output_training.json`** - Human-readable format with quality scores (for review)
 - **Console report** - Comprehensive statistics including:
   - Generation metrics (requested, generated, rejected, acceptance rate)
@@ -136,7 +136,7 @@ For users who prefer a graphical interface, kg2sft provides an optional **Stream
 
 **Live Demo:** [https://kg2sft.streamlit.app/](https://kg2sft.streamlit.app/)
 
-You can use kg2sft directly in your browser without any local installation. Simply visit the link above, configure your Azure OpenAI credentials, upload your GraphML file, and start generating training data.
+You can use kg2sft directly in your browser without any local installation. Simply visit the link above, configure your Microsoft Foundry (aka Azure OpenAI)'s model deployment credentials, upload your GraphML file, and start generating training data.
 
 ![Demo GIF](images/demo1.gif)
 
@@ -148,7 +148,7 @@ You can use kg2sft directly in your browser without any local installation. Simp
   - Pan, zoom, and navigate the graph
   - Color-coded nodes with size based on connection degree
 - ⚙️ **All settings configurable in sidebar**
-  - Azure OpenAI credentials (API key, endpoint, deployment)
+  - Microsoft Foundry (aka Azure OpenAI) credentials (API key, endpoint, deployment)
   - Generation parameters (count, domain, temperature)
   - Advanced settings (quality threshold, dedup threshold, sampling strategy)
 - ⚡ **Auto-Tuning Mode**: Toggle in sidebar to auto-adjust parameters and reach target count
@@ -174,7 +174,7 @@ This will open a browser window (typically at `http://localhost:8501`) with the 
 
 ### UI Screenshots & Workflow
 
-1. **Configure Azure OpenAI** in the sidebar (expand "🔑 Azure OpenAI Settings")
+1. **Configure Microsoft Foundry (aka Azure OpenAI)** in the sidebar (expand "🔑 Microsoft Foundry Settings")
 2. **Upload a GraphML file** or use the sample file buttons
 3. **View the interactive graph** visualization
 4. **Adjust generation settings** as needed
@@ -649,8 +649,8 @@ kg2sft automatically detects relationship types by checking these attribute name
 
 kg2sft generates two files:
 
-### 1. JSONL Format (OpenAI Fine-Tuning)
-`output_training.jsonl` - Ready for OpenAI/Azure OpenAI fine-tuning:
+### 1. JSONL Format (SLM/LLM Fine-Tuning)
+`output_training.jsonl` - Ready for SLM/LLM models fine-tuning:
 
 ```jsonl
 {"messages": [{"role": "user", "content": "What does this product contain?"}, {"role": "assistant", "content": "This product contains..."}]}
@@ -789,7 +789,7 @@ Understanding the internal pipeline helps optimize your training data generation
 - **Graph capacity analysis**: Estimates max examples from graph structure
 
 #### 8. **Dataset Management** (`TrainingDataset`)
-- OpenAI fine-tuning format
+- SLM/LLM models fine-tuning format
 - Quality score tracking (internal)
 - Statistics generation
 
@@ -1200,7 +1200,7 @@ python kg2sft.py --graph makeup_knowledge_graph.graphml --count 500 --domain bea
 - **Generated:** 434 training examples (after quality validation filtering)
 - **Format:** JSONL (one JSON object per line) + JSON (array with quality scores)
 - **Files:**
-  - `sft_training_data/makeup_knowledge_09022026.jsonl` — Azure OpenAI fine-tuning format
+  - `sft_training_data/makeup_knowledge_09022026.jsonl` — SLM/LLM models fine-tuning format
   - `sft_training_data/makeup_knowledge_09022026.json` — Full format with quality scores
 
 Each training example follows the chat completion format:
@@ -1228,7 +1228,7 @@ The 434 examples span the full makeup consultation domain encoded in the knowled
 
 ### Fine-Tuning Target
 
-This dataset was used to fine-tune **gpt-4.1-nano** on Azure OpenAI, producing a domain-specialized model for beauty makeup consultation.
+This dataset was used to fine-tune **gpt-4.1-nano** on Microsoft Foundry (aka Azure OpenAI), producing a domain-specialized model for beauty makeup consultation.
 
 ---
 
@@ -1365,7 +1365,7 @@ MIT License - see LICENSE file for details
 ## 🙏 Acknowledgments
 
 - Built with [NetworkX](https://networkx.org/) for graph operations
-- Powered by [Azure OpenAI](https://azure.microsoft.com/en-us/products/ai-services/openai-service)
+- Powered by [Azure OpenAI in Foundry Models](https://azure.microsoft.com/en-us/products/ai-services/openai-service)
 - Inspired by the need for high-quality SLM training data
 
 ## 📮 Contact & Support
